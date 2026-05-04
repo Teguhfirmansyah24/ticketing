@@ -41,4 +41,4 @@ class TiketController extends Controller
 
         return view('user.tiket.show', compact('ticket'));
     }
-}
+}   

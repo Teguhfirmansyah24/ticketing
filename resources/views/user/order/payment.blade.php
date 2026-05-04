@@ -27,13 +27,37 @@
 
         {{-- Status --}}
         <div class="bg-white border border-slate-200 rounded-2xl p-8 text-center space-y-4 shadow-sm">
-            <div
-                class="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto border border-amber-100">
-                <i class="fas fa-clock text-amber-500 text-2xl"></i>
-            </div>
-            <div>
-                <h2 class="text-xl font-black text-slate-800">Menunggu Pembayaran</h2>
-                <p class="text-sm text-slate-500 mt-1">Selesaikan pembayaran sebelum pesanan kamu kedaluwarsa</p>
+            {{-- Status --}}
+            <div class="bg-white border border-slate-200 rounded-2xl p-8 space-y-4 shadow-sm relative">
+                <!-- Badge Dinamis -->
+                <div class="absolute top-6 right-6">
+                    <span class="px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-sm text-white 
+                        {{ $order->status === 'approved' ? 'bg-emerald-500' : 'bg-amber-400' }}">
+                        {{ $order->status }}
+                    </span>
+                </div>
+
+                @if($order->status === 'approved')
+                    {{-- Tampilan jika SUDAH Bayar --}}
+                    <div class="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto border border-emerald-100">
+                        <i class="fas fa-check-circle text-emerald-500 text-2xl"></i>
+                    </div>
+                    <div class="text-center">
+                        <h2 class="text-xl font-black text-slate-800">Pembayaran Berhasil</h2>
+                        <p class="text-sm text-slate-500 mt-1">E-tiket kamu sudah aktif dan siap digunakan</p>
+                    </div>
+                @else
+                    {{-- Tampilan jika BELUM Bayar (Menunggu) --}}
+                    <div class="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto border border-amber-100">
+                        <i class="fas fa-clock text-amber-500 text-2xl"></i>
+                    </div>
+                    <div class="text-center">
+                        <h2 class="text-xl font-black text-slate-800">Menunggu Pembayaran</h2>
+                        <p class="text-sm text-slate-500 mt-1">Selesaikan pembayaran sebelum pesanan kamu kedaluwarsa</p>
+                    </div>
+                @endif
+                
+                {{-- Sisanya tetap sama (Countdown, Detail Order, dll) --}}
             </div>
 
             {{-- Countdown --}}
