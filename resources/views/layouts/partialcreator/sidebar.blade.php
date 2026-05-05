@@ -47,8 +47,8 @@
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Event Saya</span>
         </a>
 
-        <a href=""
-            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('', 'creator.kelolaakses.create') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
+        <a href="{{ route('creator.kelolaakses.index') }}"
+            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('creator.kelolaakses.index', 'creator.kelolaakses.create') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
             <i class="fas fa-user-shield text-base group-hover:text-blue-400 w-5 text-center"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Kelola Akses</span>
         </a>
@@ -59,10 +59,10 @@
             <hr x-show="!sidebarOpen" class="border-white/10">
         </div>
 
-        <a href=""
-            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('') ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-white/5 group' }}">
+        <a href="{{ route('creator.profile.edit') }}"
+            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('creator.profile.edit') ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-white/5 group' }}">
             <i
-                class="fas fa-user text-base w-5 text-center {{ request()->routeIs('') ? '' : 'group-hover:text-blue-400' }}"></i>
+                class="fas fa-user text-base w-5 text-center {{ request()->routeIs('creator.profile.edit') ? '' : 'group-hover:text-blue-400' }}"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-medium">Informasi Dasar</span>
         </a>
 

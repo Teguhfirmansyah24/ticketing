@@ -19,6 +19,8 @@ use App\Http\Controllers\User\PengaturanController as UserPengaturanController;
 // Creator Controller
 use App\Http\Controllers\Creator\DashboardController as CreatorDashboardController;
 use App\Http\Controllers\Creator\EventSayaController as CreatorEventSayaController;
+use App\Http\Controllers\Creator\KelolaAksesController as CreatorKelolaAksesController;
+use App\Http\Controllers\Creator\ProfileController as CreatorProfileController;
 
 // Admin Controller
 use App\Http\Controllers\Admin\DashboardController;
@@ -57,6 +59,17 @@ Route::middleware(['auth', 'role:user'])->prefix('creator')->name('creator.')->g
     Route::get('/dashboard', [CreatorDashboardController::class, 'index'])->name('dashboard');
     Route::get('/events', [CreatorEventSayaController::class, 'index'])->name('eventsaya.index');
     Route::get('/events/{id}/stats', [CreatorEventSayaController::class, 'show'])->name('eventsaya.stats');
+
+    // Kelola Akses
+    Route::get('/kelola-akses',       [CreatorKelolaAksesController::class, 'index'])->name('kelolaakses.index');
+    Route::get('/kelola-akses/create',       [CreatorKelolaAksesController::class, 'create'])->name('kelolaakses.create');
+    Route::post('/kelola-akses/create',      [CreatorKelolaAksesController::class, 'store'])->name('kelolaakses.store');
+    Route::delete('/kelola-akses/{id}', [CreatorKelolaAksesController::class, 'destroy'])->name('kelolaakses.destroy');
+    Route::patch('/kelola-akses/{id}/toggle', [CreatorKelolaAksesController::class, 'toggleStatus'])->name('kelolaakses.toggle');
+
+    // Profile
+    Route::get('/profile', [CreatorProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [CreatorProfileController::class, 'update'])->name('profile.update');
 });
 
 // =============================================================
