@@ -6,14 +6,18 @@ use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\Payment;
-use App\Models\PaymentMethod;
 use App\Models\TicketType;
+use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class OrderController extends Controller
 {
+    /**
+     * Step 1: Form Pemesanan
+     */
     public function create($eventId)
     {
         $event = Event::with([
@@ -22,11 +26,12 @@ class OrderController extends Controller
             'ticketTypes' => fn($q) => $q->where('is_active', true)->orderBy('price')
         ])->where('status', 'published')->findOrFail($eventId);
 
-        $paymentMethods = PaymentMethod::where('is_active', true)->get()->groupBy('type');
-
-        return view('user.order.create', compact('event', 'paymentMethods'));
+        return view('user.order.create', compact('event'));
     }
 
+    /**
+     * Step 2: Validasi & Simpan ke Database
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -35,169 +40,139 @@ class OrderController extends Controller
             'email'             => 'required|email|max:255',
             'phone'             => 'required|string|max:20',
             'id_number'         => 'required|string|max:20',
-            'birth_date'        => 'required|date',
             'agree'             => 'required|accepted',
             'tickets'           => 'required|array',
             'tickets.*.id'      => 'required|exists:ticket_types,id',
             'tickets.*.qty'     => 'required|integer|min:0',
         ]);
 
-        // Cek apakah ada tiket yang dipilih
         $selectedTickets = collect($request->tickets)->filter(fn($t) => $t['qty'] > 0);
 
         if ($selectedTickets->isEmpty()) {
-            return back()->withErrors(['tickets' => 'Pilih minimal 1 tiket.'])->withInput();
+            return back()->withErrors(['tickets' => 'Silakan pilih minimal 1 jenis tiket.'])->withInput();
         }
 
         $event = Event::findOrFail($request->event_id);
-
-        // Hitung total
         $totalAmount = 0;
         $items = [];
 
         foreach ($selectedTickets as $item) {
             $ticketType = TicketType::findOrFail($item['id']);
-
-            // Cek kuota
             $available = $ticketType->quota - $ticketType->sold;
+            
             if ($item['qty'] > $available) {
-                return back()->withErrors([
-                    'tickets' => "Tiket {$ticketType->name} hanya tersisa {$available} tiket."
-                ])->withInput();
-            }
-
-            // Cek max per transaksi
-            if ($event->max_tickets_per_transaction && $item['qty'] > $event->max_tickets_per_transaction) {
-                return back()->withErrors([
-                    'tickets' => "Maksimal {$event->max_tickets_per_transaction} tiket per transaksi."
-                ])->withInput();
+                return back()->withErrors(['tickets' => "Tiket {$ticketType->name} hanya tersisa {$available}."])->withInput();
             }
 
             $subtotal     = $ticketType->price * $item['qty'];
             $totalAmount += $subtotal;
 
             $items[] = [
-                'ticket_type'  => $ticketType,
-                'quantity'     => $item['qty'],
-                'price'        => $ticketType->price,
-                'subtotal'     => $subtotal,
+                'ticket_type_id' => $ticketType->id,
+                'name'           => $ticketType->name,
+                'quantity'       => $item['qty'],
+                'price'          => $ticketType->price,
+                'subtotal'       => $subtotal,
             ];
         }
 
-        // Simpan data ke session untuk step konfirmasi
-        session([
-            'order_data' => [
-                'event_id'    => $event->id,
-                'name'        => $request->name,
-                'email'       => $request->email,
-                'phone'       => $request->phone,
-                'id_number'   => $request->id_number,
-                'birth_date'  => $request->birth_date,
-                'items'       => collect($items)->map(fn($i) => [
-                    'ticket_type_id' => $i['ticket_type']->id,
-                    'name'           => $i['ticket_type']->name,
-                    'quantity'       => $i['quantity'],
-                    'price'          => $i['price'],
-                    'subtotal'       => $i['subtotal'],
-                ])->values()->toArray(),
-                'total_amount' => $totalAmount,
-            ]
-        ]);
+        try {
+            $order = DB::transaction(function () use ($event, $request, $totalAmount, $items) {
+                $order = Order::create([
+                    'user_id'      => auth()->id(),
+                    'event_id'     => $event->id,
+                    'order_code'   => 'ORD-' . strtoupper(Str::random(10)),
+                    'total_amount' => $totalAmount,
+                    'name'         => $request->name,
+                    'email'        => $request->email,
+                    'phone'        => $request->phone,
+                    'id_number'    => $request->id_number,
+                    'status'       => 'pending',
+                    'expired_at'   => now()->addMinutes(15),
+                ]);
 
-        return redirect()->route('orders.confirm');
-    }
+                foreach ($items as $item) {
+                    OrderItem::create([
+                        'order_id'       => $order->id,
+                        'ticket_type_id' => $item['ticket_type_id'],
+                        'quantity'       => $item['quantity'],
+                        'price'          => $item['price'],
+                        'subtotal'       => $item['subtotal'],
+                    ]);
+                    
+                    TicketType::find($item['ticket_type_id'])->increment('sold', $item['quantity']);
+                }
 
-    public function confirm()
-    {
-        $orderData = session('order_data');
-        if (!$orderData) return redirect()->route('home');
+                return $order;
+            });
 
-        $event          = Event::with(['creator', 'category'])->findOrFail($orderData['event_id']);
-        $paymentMethods = PaymentMethod::where('is_active', true)->get()->groupBy('type');
+            return redirect()->route('orders.confirm', $order->id);
 
-        return view('user.order.confirm', compact('orderData', 'event', 'paymentMethods'));
-    }
-
-    public function pay(Request $request)
-    {
-        $request->validate([
-            'payment_method_id' => 'required|exists:payment_methods,id',
-        ]);
-
-        $orderData = session('order_data');
-        if (!$orderData) return redirect()->route('home');
-
-        $paymentMethod = PaymentMethod::findOrFail($request->payment_method_id);
-
-        // Buat order
-        $order = Order::create([
-            'user_id'      => auth()->id(),
-            'order_code'   => 'ORD-' . strtoupper(Str::random(10)),
-            'total_amount' => $orderData['total_amount'],
-            'status'       => 'pending',
-            'expired_at'   => now()->addMinutes(15),
-        ]);
-
-        // Buat order items
-        foreach ($orderData['items'] as $item) {
-            OrderItem::create([
-                'order_id'       => $order->id,
-                'ticket_type_id' => $item['ticket_type_id'],
-                'quantity'       => $item['quantity'],
-                'price'          => $item['price'],
-                'subtotal'       => $item['subtotal'],
-            ]);
-
-            // Update sold count
-            TicketType::find($item['ticket_type_id'])->increment('sold', $item['quantity']);
+        } catch (Exception $e) {
+            return back()->with('error', 'Gagal memproses pesanan: ' . $e->getMessage());
         }
-
-        // Buat payment
-        Payment::create([
-            'order_id'     => $order->id,
-            'payment_code' => 'PAY-' . strtoupper(Str::random(10)),
-            'amount'       => $orderData['total_amount'],
-            'method'       => $paymentMethod->type,
-            'status'       => 'pending',
-        ]);
-
-        // Hapus session
-        session()->forget('order_data');
-
-        return redirect()->route('orders.payment', $order->id);
     }
 
-    public function payment($orderId)
+    /**
+     * Step 3: Halaman Konfirmasi
+     */
+public function confirm($id)
+{
+    $order = Order::with(['orderItems.ticketType', 'event'])
+        ->where('user_id', auth()->id())
+        ->findOrFail($id);
+    
+    // HAPUS ATAU KOMENTARI BAGIAN IF REDIRECT INI:
+    /*
+    if ($order->status !== 'pending') {
+        return redirect()->route('orders.success', $order->id);
+    }
+    */
+
+    $orderData = [
+        'event_id'     => $order->event_id,
+        'name'         => $order->name,
+        'email'        => $order->email,
+        'phone'        => $order->phone,
+        'id_number'    => $order->id_number,
+        'total_amount' => $order->total_amount,
+        'items'        => $order->orderItems 
+    ];
+
+    return view('user.order.confirm', [
+        'order'     => $order,
+        'orderData' => $orderData,
+        'orderId'   => $order->id, 
+        'event'     => $order->event
+    ]);
+}     
+    public function getSnapToken(Order $order, MidtransService $midtransService)
     {
-        $order = Order::with([
-            'orderItems.ticketType.event',
-            'payment'
-        ])->where('user_id', auth()->id())->findOrFail($orderId);
+        try {
+            if ($order->orderItems->isEmpty()) {
+                return response()->json(['error' => 'Tiket tidak ditemukan.'], 422);
+            }
 
-        $paymentMethod = PaymentMethod::where('type', $order->payment->method)
-            ->where('is_active', true)
-            ->first();
+            $token = $midtransService->createSnapToken($order);
+            return response()->json(['token' => $token]);
 
-        return view('user.order.payment', compact('order', 'paymentMethod'));
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
-    public function uploadProof(Request $request, $orderId)
-    {
-        $request->validate([
-            'payment_proof' => 'required|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+    /**
+     * Step 5: Update Status & Halaman Sukses
+     * Fungsi ini yang bikin status berubah jadi APPROVED
+     */
+    public function paymentSuccess($id)
+{
+    $order = Order::where('user_id', auth()->id())->findOrFail($id);
 
-        $order = Order::where('user_id', auth()->id())->findOrFail($orderId);
+    // Gunakan cara manual save agar lebih eksplisit
+    $order->status = 'approved'; 
+    $order->save();
 
-        $path = $request->file('payment_proof')->store('payment-proofs', 'public');
-
-        $order->payment->update([
-            'payment_proof' => $path,
-            'status'        => 'verifying',
-            'paid_at'       => now(),
-        ]);
-
-        return redirect()->route('orders.payment', $order->id)
-            ->with('success', 'Bukti pembayaran berhasil dikirim. Menunggu verifikasi admin.');
-    }
+    return view('user.order.success', compact('order'));
+}
 }

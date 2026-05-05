@@ -12,16 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tickets', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('order_item_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('event_id')->constrained()->onDelete('cascade');
-            $table->foreignId('ticket_type_id')->constrained()->onDelete('cascade');
-            $table->string('ticket_code')->unique();
-            $table->enum('status', ['active', 'used', 'cancelled'])->default('active');
-            $table->timestamp('used_at')->nullable();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->foreignId('user_id')->constrained()->onDelete('cascade');
+    $table->foreignId('event_id')->constrained()->onDelete('cascade');
+    $table->foreignId('order_item_id')->constrained()->onDelete('cascade');
+    $table->foreignId('ticket_type_id')->constrained()->onDelete('cascade');
+    $table->string('ticket_code')->unique();
+    $table->string('status')->default('pending'); // pending, approved, used
+    $table->datetime('used_at')->nullable();
+    $table->timestamps();
+});
     }
 
     /**
