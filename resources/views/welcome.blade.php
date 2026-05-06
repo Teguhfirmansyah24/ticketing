@@ -204,9 +204,13 @@
                                             <div class="flex items-center space-x-3">
                                                 <div
                                                     class="w-6 h-6 rounded-full bg-gray-200 flex-shrink-0 flex items-center justify-center text-[10px] font-bold">
-                                                    {{ substr($event->creator->name, 0, 1) }}
+                                                    <img src="{{ asset('storage/' . $event->creator->avatar) }}"
+                                                        alt="{{ $event->creator->name }}"
+                                                        class="w-full h-full object-cover rounded-full">
                                                 </div>
-                                                <span class="text-xs font-medium text-gray-600 truncate">
+                                                <span
+                                                    class="text-xs
+                                                        font-medium text-gray-600 truncate">
                                                     {{ $event->creator->name }}
                                                 </span>
                                             </div>
@@ -425,7 +429,9 @@
                                         <div class="pt-3 border-t border-slate-100 flex items-center space-x-2">
                                             <div
                                                 class="w-7 h-7 rounded-md bg-blue-50 flex items-center justify-center border border-blue-100 text-xs font-black text-blue-700">
-                                                {{ strtoupper(substr($event->creator->name, 0, 1)) }}
+                                                <img src="{{ asset('storage/' . $event->creator->avatar) }}"
+                                                    alt="{{ $event->creator->name }}"
+                                                    class="w-full h-full object-cover rounded-full">
                                             </div>
                                             <span class="text-xs font-semibold text-slate-600 truncate">
                                                 {{ $event->creator->name }}

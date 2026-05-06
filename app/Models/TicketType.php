@@ -35,4 +35,8 @@ class TicketType extends Model
     {
         return $this->quota - $this->sold;
     }
+    public function hasAvailableStock($quantity)
+    {
+        return $this->quota >= $quantity;
+    }
 }
