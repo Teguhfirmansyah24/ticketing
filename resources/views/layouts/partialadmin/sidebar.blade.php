@@ -46,11 +46,19 @@
             <i class="fas fa-file-alt text-base group-hover:text-blue-400 w-5 text-center"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Event Admin</span>
         </a> 
+
+        <a href="{{ route('admin.Kategori.index') }}"
+            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.Kategori.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
+           <i class="fas fa-tags text-base group-hover:text-blue-400 w-5 text-center"></i>
+            <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Kategori</span>
+        </a>
+
         <a href="{{ route('admin.access.index') }}"
-            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.access.index') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
+            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.access.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
             <i class="fas fa-user-shield text-base group-hover:text-blue-400 w-5 text-center"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Kelola Akses</span>
         </a>
+
     </nav>
 
     <div class="p-3 border-t border-white/5 mt-auto">

@@ -14,8 +14,7 @@
                 <nav class="flex gap-8 sm:gap-12">
                     <button @click="activeTab = 'aktif'"
                         :class="activeTab === 'aktif'
-                            ?
-                            'text-slate-900 border-blue-600 border-b-4' :
+                            ? 'text-slate-900 border-blue-600 border-b-4' :
                             'text-gray-400 border-transparent hover:text-gray-600'"
                         class="pb-4 px-2 text-sm font-bold transition-all relative top-[2px] whitespace-nowrap flex items-center gap-2">
                         Tiket Saya
@@ -27,8 +26,7 @@
                     </button>
                     <button @click="activeTab = 'lalu'"
                         :class="activeTab === 'lalu'
-                            ?
-                            'text-slate-900 border-blue-600 border-b-4' :
+                            ? 'text-slate-900 border-blue-600 border-b-4' :
                             'text-gray-400 border-transparent hover:text-gray-600'"
                         class="pb-4 px-2 text-sm font-bold transition-all relative top-[2px] whitespace-nowrap flex items-center gap-2">
                         Tiket Lalu
@@ -67,38 +65,34 @@
                     </div>
                 @else
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        @foreach ($activeTickets as $ticket)
-                            <a href="{{ route('user.tickets.show', $ticket->ticket_code) }}"
+                        @foreach ($activeTickets as $tiket)
+                            {{-- Perbaikan Route: Menggunakan member.tiket.show --}}
+                            <a href="{{ route('member.tiket.show', $tiket->ticket_code) }}"
                                 class="group bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-lg transition-all duration-300">
 
                                 {{-- Banner --}}
                                 <div class="relative h-36 overflow-hidden">
-                                    <img src="{{ $ticket->event->banner_image ? asset('storage/' . $ticket->event->banner_image) : 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600' }}"
-                                        alt="{{ $ticket->event->title }}"
+                                    <img src="{{ $tiket->event->banner_image ? asset('storage/' . $tiket->event->banner_image) : 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600' }}"
+                                        alt="{{ $tiket->event->title }}"
                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 
-                                    {{-- Badge Status --}}
                                     <div class="absolute top-3 right-3">
-                                        <span
-                                            class="bg-emerald-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
+                                        <span class="bg-emerald-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
                                             Aktif
                                         </span>
                                     </div>
 
-                                    {{-- Kategori --}}
                                     <div class="absolute top-3 left-3">
-                                        <span
-                                            class="bg-white/20 backdrop-blur text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
-                                            {{ $ticket->event->category->name ?? 'Event' }}
+                                        <span class="bg-white/20 backdrop-blur text-white text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">
+                                            {{ $tiket->event->category->name ?? 'Event' }}
                                         </span>
                                     </div>
 
-                                    {{-- Tanggal di atas gambar --}}
                                     <div class="absolute bottom-3 left-4">
                                         <p class="text-white text-xs font-bold">
                                             <i class="far fa-calendar-alt mr-1.5"></i>
-                                            {{ $ticket->event->start_date->translatedFormat('j M Y, H:i') }} WIB
+                                            {{ \Carbon\Carbon::parse($tiket->event->start_date)->translatedFormat('j M Y, H:i') }} WIB
                                         </p>
                                     </div>
                                 </div>
@@ -106,45 +100,30 @@
                                 {{-- Konten --}}
                                 <div class="p-5 flex flex-col flex-1 space-y-4">
                                     <div>
-                                        <h3
-                                            class="font-black text-slate-800 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
-                                            {{ $ticket->event->title }}
+                                        <h3 class="font-black text-slate-800 leading-snug line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                            {{ $tiket->event->title }}
                                         </h3>
                                         <p class="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
                                             <i class="fas fa-map-marker-alt text-blue-500"></i>
-                                            {{ $ticket->event->venue }}, {{ $ticket->event->location }}
+                                            {{ $tiket->event->venue }}, {{ $tiket->event->location }}
                                         </p>
                                     </div>
 
                                     <div class="pt-3 border-t border-slate-50 space-y-2">
                                         <div class="flex justify-between items-center">
-                                            <span
-                                                class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jenis
-                                                Tiket</span>
-                                            <span
-                                                class="text-xs font-bold text-slate-700">{{ $ticket->ticketType->name }}</span>
+                                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jenis Tiket</span>
+                                            <span class="text-xs font-bold text-slate-700">{{ $tiket->ticketType->name }}</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span
-                                                class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kode
-                                                Tiket</span>
-                                            <span
-                                                class="text-xs font-bold text-slate-700 font-mono bg-slate-50 px-2 py-0.5 rounded">
-                                                {{ substr($ticket->ticket_code, 0, 12) }}...
-                                            </span>
-                                        </div>
-                                        <div class="flex justify-between items-center">
-                                            <span
-                                                class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Order</span>
-                                            <span class="text-xs font-bold text-slate-700 font-mono">
-                                                {{ $ticket->orderItem->order->order_code }}
+                                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kode Tiket</span>
+                                            <span class="text-xs font-bold text-slate-700 font-mono bg-slate-50 px-2 py-0.5 rounded">
+                                                {{ substr($tiket->ticket_code, 0, 12) }}...
                                             </span>
                                         </div>
                                     </div>
 
                                     <div class="mt-auto">
-                                        <div
-                                            class="flex items-center justify-between bg-blue-50 rounded-xl px-4 py-3 border border-blue-100">
+                                        <div class="flex items-center justify-between bg-blue-50 rounded-xl px-4 py-3 border border-blue-100">
                                             <span class="text-xs font-bold text-blue-700">Lihat E-Tiket & QR Code</span>
                                             <i class="fas fa-chevron-right text-blue-400 text-xs"></i>
                                         </div>
@@ -172,78 +151,43 @@
                     </div>
                 @else
                     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        @foreach ($pastTickets as $ticket)
-                            <a href="{{ route('user.tickets.show', $ticket->ticket_code) }}"
+                        @foreach ($pastTickets as $tiket)
+                            {{-- Perbaikan Route: Menggunakan member.tiket.show --}}
+                            <a href="{{ route('member.tiket.show', $tiket->ticket_code) }}"
                                 class="group bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col opacity-75 hover:opacity-100 transition-all duration-300">
 
-                                {{-- Banner --}}
                                 <div class="relative h-36 overflow-hidden">
-                                    <img src="{{ $ticket->event->banner_image ? asset('storage/' . $ticket->event->banner_image) : 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600' }}"
-                                        alt="{{ $ticket->event->title }}" class="w-full h-full object-cover grayscale">
+                                    <img src="{{ $tiket->event->banner_image ? asset('storage/' . $tiket->event->banner_image) : 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600' }}"
+                                        alt="{{ $tiket->event->title }}" class="w-full h-full object-cover grayscale">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 
-                                    {{-- Badge Status --}}
                                     <div class="absolute top-3 right-3">
-                                        @if ($ticket->status === 'used')
-                                            <span
-                                                class="bg-slate-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
-                                                Sudah Dipakai
-                                            </span>
-                                        @elseif ($ticket->status === 'cancelled')
-                                            <span
-                                                class="bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
-                                                Dibatalkan
-                                            </span>
-                                        @else
-                                            <span
-                                                class="bg-slate-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
-                                                Selesai
-                                            </span>
-                                        @endif
+                                        <span class="bg-slate-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
+                                            {{ $tiket->status === 'used' ? 'Sudah Dipakai' : ($tiket->status === 'cancelled' ? 'Dibatalkan' : 'Selesai') }}
+                                        </span>
                                     </div>
 
                                     <div class="absolute bottom-3 left-4">
                                         <p class="text-white text-xs font-bold">
                                             <i class="far fa-calendar-alt mr-1.5"></i>
-                                            {{ $ticket->event->start_date->translatedFormat('j M Y') }}
+                                            {{ \Carbon\Carbon::parse($tiket->event->start_date)->translatedFormat('j M Y') }}
                                         </p>
                                     </div>
                                 </div>
 
-                                {{-- Konten --}}
                                 <div class="p-5 flex flex-col flex-1 space-y-4">
                                     <div>
                                         <h3 class="font-black text-slate-600 leading-snug line-clamp-2">
-                                            {{ $ticket->event->title }}
+                                            {{ $tiket->event->title }}
                                         </h3>
                                         <p class="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
                                             <i class="fas fa-map-marker-alt text-slate-400"></i>
-                                            {{ $ticket->event->venue }}, {{ $ticket->event->location }}
+                                            {{ $tiket->event->venue }}, {{ $tiket->event->location }}
                                         </p>
                                     </div>
 
-                                    <div class="pt-3 border-t border-slate-50 space-y-2">
-                                        <div class="flex justify-between items-center">
-                                            <span
-                                                class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Jenis
-                                                Tiket</span>
-                                            <span
-                                                class="text-xs font-bold text-slate-500">{{ $ticket->ticketType->name }}</span>
-                                        </div>
-                                        <div class="flex justify-between items-center">
-                                            <span
-                                                class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kode
-                                                Tiket</span>
-                                            <span
-                                                class="text-xs font-mono text-slate-500 bg-slate-50 px-2 py-0.5 rounded">
-                                                {{ substr($ticket->ticket_code, 0, 12) }}...
-                                            </span>
-                                        </div>
-                                    </div>
-
                                     <div class="mt-auto">
-                                        <div
-                                            class="flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3 border border-slate-100">
+                                        <div class="flex items-center justify-between bg-slate-50 rounded-xl px-4 py-3 border border-slate-100">
                                             <span class="text-xs font-bold text-slate-500">Lihat Detail Tiket</span>
                                             <i class="fas fa-chevron-right text-slate-300 text-xs"></i>
                                         </div>

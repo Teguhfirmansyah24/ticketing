@@ -104,33 +104,43 @@ class EventController extends Controller
     }
 
     public function edit(string $id) 
-    {
+{
     $event = Event::findOrFail($id);
-    // Jika butuh kategori untuk dropdown:
-    // $categories = EventCategory::all(); 
+    // Ambil semua kategori agar bisa dipilih di dropdown menu
+    $categories = Category::all(); 
     
-    return view('admin.event.edit', compact('event'));   
-     }
+    return view('admin.event.edit', compact('event', 'categories'));   
+}
 
-    public function update(Request $request, string $id) 
-    {
-        $event = Event::findOrFail($id);
+public function update(Request $request, string $id) 
+{
+    $event = Event::findOrFail($id);
     
-        $validated = $request->validate([
-        'title' => 'required|string|max:255',
-        'location' => 'required',
-        // tambahkan field lainnya sesuai database
+    $validated = $request->validate([
+        'title'       => 'required|string|max:255',
+        'location'    => 'required',
+        'category_id' => 'required|exists:categories,id', // Tambahkan validasi FK
+        'description' => 'nullable|string',
+        'start_date'  => 'required|date',
+        'end_date'    => 'required|date|after:start_date',
+        // Tambahkan field lain sesuai migration kamu
     ]);
 
     $event->update($validated);
 
-    return redirect()->route('admin.event-admin')->with('success', 'Event berhasil diperbarui!');
-    }
+    return redirect()->route('admin.event.index')->with('success', 'Event berhasil diperbarui!');
+}
 
     public function destroy(string $id)
-    {
-        $event = Event::findOrFail($id);
-        $event->delete();
-        return redirect()->back()->with('success', 'Event berhasil dihapus');
+{
+    $event = Event::findOrFail($id);
+    
+    // Hapus foto dari storage jika ada
+    if ($event->banner_image) {
+        Storage::disk('public')->delete($event->banner_image);
     }
+    
+    $event->delete();
+    return redirect()->back()->with('success', 'Event berhasil dihapus');
+}
 }
