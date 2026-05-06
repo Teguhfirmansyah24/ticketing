@@ -1,20 +1,34 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController;
+use Illuminate\Support\Facades\Route;
+
+// Public Controller
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Guest\EventController;
+use App\Http\Controllers\Guest\CreatorController;
+use App\Http\Controllers\Guest\HelpController;
+use App\Http\Controllers\Guest\BlogController;
 use App\Http\Controllers\BotManController;
+
+// User Controller
+use App\Http\Controllers\User\TiketController as UserTiketController;
+use App\Http\Controllers\User\OrderController as UserOrderController;
+use App\Http\Controllers\User\ProfileController as UserProfileController;
+use App\Http\Controllers\User\PengaturanController as UserPengaturanController;
+
+// Creator Controller
 use App\Http\Controllers\Creator\DashboardController as CreatorDashboardController;
 use App\Http\Controllers\Creator\EventSayaController as CreatorEventSayaController;
-use App\Http\Controllers\Guest\BlogController;
-use App\Http\Controllers\Guest\CreatorController;
-use App\Http\Controllers\Guest\EventController;
-use App\Http\Controllers\Guest\HelpController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\User\OrderController as UserOrderController;
-use App\Http\Controllers\User\PengaturanController as UserPengaturanController;
-use App\Http\Controllers\User\ProfileController as UserProfileController;
-use App\Http\Controllers\User\TiketController as UserTiketController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Creator\KelolaAksesController as CreatorKelolaAksesController;
+use App\Http\Controllers\Creator\ProfileController as CreatorProfileController;
+use App\Http\Controllers\Creator\RekeningController as CreatorRekeningController;
+
+// Admin Controller (Gunakan use statement agar kode di bawah lebih bersih)
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventController as AdminEventController;
+use App\Http\Controllers\Admin\TicketController as AdminTicketController;
+use App\Http\Controllers\Admin\AccesController as AdminAccessController;
 
 // =============================================================
 // PUBLIC ROUTES
@@ -108,19 +122,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Update dan Delete cukup pakai {ticket} karena ID ticket sudah unik
     Route::put('tickets/{ticket}', [AdminTicketController::class, 'update'])->name('tickets.update');
     Route::delete('tickets/{ticket}', [AdminTicketController::class, 'destroy'])->name('tickets.destroy');
-    Route::post('/tickets/{id}/checkout', [App\Http\Controllers\Admin\TicketController::class, 'checkout'])->name('tickets.checkout');
     Route::get('/event/{id}/edit', [AdminEventController::class, 'edit'])->name('events.edit');
     Route::put('/event/{id}', [AdminEventController::class, 'update'])->name('events.update');
     Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
 });
-Route::middleware(['auth', 'role:user'])->prefix('member')->as('member.')->group(function () {
-    Route::get('/my-tickets', [TiketController::class, 'index'])->name('tiket.index');
-    // Tambahkan ini kalau belum ada:
-    Route::get('/my-tickets/{id}', [TiketController::class, 'show'])->name('tiket.show');
-});
 
 //bot chat
 Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
-Route::get('/botman/chat', [BotManController::class, 'chat'])->name('botman.chat'); // UI frame
+Route::get('/botman/chat', [BotManController::class, 'chat'])->name('botman.chat');
 
 require __DIR__ . '/auth.php';
