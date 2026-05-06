@@ -55,26 +55,6 @@
                         style="display: none;">
 
                         <!-- Switch Account Section -->
-                        <div class="px-3 mb-2">
-                            <a href="{{ route('home') }}"
-                                class="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100 group hover:border-blue-200 hover:bg-blue-50 transition-all">
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="w-10 h-10 rounded-xl bg-white shadow-sm flex items-center justify-center text-blue-600 border border-slate-50">
-                                        <i class="fas fa-user text-sm"></i>
-                                    </div>
-                                    <div>
-                                        <p
-                                            class="text-[10px] font-black uppercase text-slate-400 tracking-widest leading-none mb-1">
-                                            Beralih ke</p>
-                                        <p class="text-sm font-bold text-slate-800 group-hover:text-blue-600">Akun
-                                            Pembeli</p>
-                                    </div>
-                                </div>
-                                <i
-                                    class="fas fa-arrow-right text-xs text-slate-300 group-hover:text-blue-500 transform group-hover:translate-x-1 transition-all"></i>
-                            </a>
-                        </div>
 
                         <!-- Main admin Links -->
                         <div class="px-2 space-y-1">
@@ -85,39 +65,24 @@
                                 <i class="fas fa-home w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Dashboard</span>
                             </a>
-                            <a href="#"
+                            <a href="{{route('admin.event-admin')}}"
+                                class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
+                                <i class="fas fa-tag w-5 text-slate-400 group-hover:text-indigo-500"></i>
+                                <span>Event Admin</span>
+                            </a>
+                            <a href="{{route('admin.access.index')}}"
                                 class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
                                 <i class="fas fa-user-shield w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Kelola Akses</span>
                             </a>
+                            <a href="{{route('admin.Kategori.index')}}"
+                                class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
+                                <i class="fas fa-tag w-5 text-slate-400 group-hover:text-indigo-500"></i>
+                                <span>Kategori</span>
+                            </a>
                         </div>
 
                         <div class="my-2 border-t border-slate-50"></div>
-
-                        <!-- Settings & Legal -->
-                        <div class="px-2 space-y-1">
-                            <a href="#"
-                                class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
-                                <i class="fas fa-user w-5 text-slate-400 group-hover:text-indigo-500"></i>
-                                <span>Informasi Dasar</span>
-                            </a>
-                            <a href="#"
-                                class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
-                                <i class="fas fa-cog w-5 text-slate-400 group-hover:text-indigo-500"></i>
-                                <span>Pengaturan</span>
-                            </a>
-                            <a href="#"
-                                class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
-                                <i class="fas fa-briefcase w-5 text-slate-400 group-hover:text-indigo-500"></i>
-                                <span>Informasi Legal</span>
-                            </a>
-                            <a href="#"
-                                class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
-                                <i class="fas fa-wallet w-5 text-slate-400 group-hover:text-indigo-500"></i>
-                                <span>Rekening</span>
-                            </a>
-                        </div>
-
                         <div class="my-2 border-t border-slate-50"></div>
 
                         <!-- Logout -->
