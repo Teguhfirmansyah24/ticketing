@@ -94,7 +94,7 @@
                                 <i class="fas fa-file-alt w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Event Saya</span>
                             </a>
-                            <a href="#"
+                            <a href="{{ route('creator.kelolaakses.index') }}"
                                 class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
                                 <i class="fas fa-user-shield w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Kelola Akses</span>
@@ -105,7 +105,7 @@
 
                         <!-- Settings & Legal -->
                         <div class="px-2 space-y-1">
-                            <a href="#"
+                            <a href="{{ route('creator.profile.edit') }}"
                                 class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
                                 <i class="fas fa-user w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Informasi Dasar</span>
@@ -120,7 +120,7 @@
                                 <i class="fas fa-briefcase w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Informasi Legal</span>
                             </a>
-                            <a href="#"
+                            <a href="{{ route('creator.rekening.index') }}"
                                 class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
                                 <i class="fas fa-wallet w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Rekening</span>

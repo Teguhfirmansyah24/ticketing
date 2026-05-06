@@ -21,6 +21,7 @@ use App\Http\Controllers\Creator\DashboardController as CreatorDashboardControll
 use App\Http\Controllers\Creator\EventSayaController as CreatorEventSayaController;
 use App\Http\Controllers\Creator\KelolaAksesController as CreatorKelolaAksesController;
 use App\Http\Controllers\Creator\ProfileController as CreatorProfileController;
+use App\Http\Controllers\Creator\RekeningController as CreatorRekeningController;
 
 // Admin Controller
 use App\Http\Controllers\Admin\DashboardController;
@@ -70,6 +71,13 @@ Route::middleware(['auth', 'role:user'])->prefix('creator')->name('creator.')->g
     // Profile
     Route::get('/profile', [CreatorProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [CreatorProfileController::class, 'update'])->name('profile.update');
+
+    // Rekening
+    Route::get('/rekening',              [CreatorRekeningController::class, 'index'])->name('rekening.index');
+    Route::get('/rekening/create',       [CreatorRekeningController::class, 'create'])->name('rekening.create');
+    Route::post('/rekening',             [CreatorRekeningController::class, 'store'])->name('rekening.store');
+    Route::delete('/rekening/{id}',      [CreatorRekeningController::class, 'destroy'])->name('rekening.destroy');
+    Route::patch('/rekening/{id}/primary', [CreatorRekeningController::class, 'setPrimary'])->name('rekening.primary');
 });
 
 // =============================================================
@@ -83,9 +91,9 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/events/{id}/buy',      [UserOrderController::class, 'create'])->name('orders.create');
     Route::post('/orders',              [UserOrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/confirm/{id}',  [UserOrderController::class, 'confirm'])->name('orders.confirm');
-    
+
     // Alur Pembayaran & Midtrans
-    Route::get('/payment/token/{order}', [UserOrderController::class, 'getSnapToken'])->name('orders.token');    
+    Route::get('/payment/token/{order}', [UserOrderController::class, 'getSnapToken'])->name('orders.token');
     Route::get('/orders/success/{id}',   [UserOrderController::class, 'paymentSuccess'])->name('orders.success');
 
     // Route Tambahan (Opsional sesuai kodingan lama)
@@ -103,7 +111,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('/event-admin', [App\Http\Controllers\Admin\EventController::class, 'index'])->name('event-admin');
 
-    Route::resource('access',App\Http\Controllers\Admin\AccesController::class);
+    Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
 });
 
 require __DIR__ . '/auth.php';
