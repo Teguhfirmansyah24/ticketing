@@ -30,7 +30,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Step 2: Validasi & Simpan ke Database
+     * Step 2: Simpan Order & Kurangi Stok (Sold)
      */
     public function store(Request $request)
     {
@@ -38,7 +38,7 @@ class OrderController extends Controller
             'event_id'          => 'required|exists:events,id',
             'name'              => 'required|string|max:255',
             'email'             => 'required|email|max:255',
-            'phone'             => 'required|string|max:20',
+            'phone'              => 'required|string|max:20',
             'id_number'         => 'required|string|max:20',
             'agree'             => 'required|accepted',
             'tickets'           => 'required|array',
@@ -100,6 +100,7 @@ class OrderController extends Controller
                         'subtotal'       => $item['subtotal'],
                     ]);
                     
+                    // Stok otomatis berkurang di database (Admin & User sinkron)
                     TicketType::find($item['ticket_type_id'])->increment('sold', $item['quantity']);
                 }
 
@@ -114,38 +115,35 @@ class OrderController extends Controller
     }
 
     /**
-     * Step 3: Halaman Konfirmasi
+     * Step 3: Halaman Konfirmasi Pembayaran
      */
-public function confirm($id)
-{
-    $order = Order::with(['orderItems.ticketType', 'event'])
-        ->where('user_id', auth()->id())
-        ->findOrFail($id);
-    
-    // HAPUS ATAU KOMENTARI BAGIAN IF REDIRECT INI:
-    /*
-    if ($order->status !== 'pending') {
-        return redirect()->route('orders.success', $order->id);
-    }
-    */
+    public function confirm($id)
+    {
+        $order = Order::with(['orderItems.ticketType', 'event'])
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
+        
+        $orderData = [
+            'event_id'     => $order->event_id,
+            'name'         => $order->name,
+            'email'        => $order->email,
+            'phone'        => $order->phone,
+            'id_number'    => $order->id_number,
+            'total_amount' => $order->total_amount,
+            'items'        => $order->orderItems 
+        ];
 
-    $orderData = [
-        'event_id'     => $order->event_id,
-        'name'         => $order->name,
-        'email'        => $order->email,
-        'phone'        => $order->phone,
-        'id_number'    => $order->id_number,
-        'total_amount' => $order->total_amount,
-        'items'        => $order->orderItems 
-    ];
+        return view('user.order.confirm', [
+            'order'     => $order,
+            'orderData' => $orderData,
+            'orderId'   => $order->id, 
+            'event'     => $order->event
+        ]);
+    }     
 
-    return view('user.order.confirm', [
-        'order'     => $order,
-        'orderData' => $orderData,
-        'orderId'   => $order->id, 
-        'event'     => $order->event
-    ]);
-}     
+    /**
+     * Step 4: Ambil Token Midtrans
+     */
     public function getSnapToken(Order $order, MidtransService $midtransService)
     {
         try {
@@ -162,17 +160,48 @@ public function confirm($id)
     }
 
     /**
-     * Step 5: Update Status & Halaman Sukses
-     * Fungsi ini yang bikin status berubah jadi APPROVED
+     * Step 5: Update Status Jadi Approved
      */
     public function paymentSuccess($id)
 {
-    $order = Order::where('user_id', auth()->id())->findOrFail($id);
+    // Ambil order beserta itemnya
+    $order = Order::with('orderItems.ticketType')->where('user_id', auth()->id())->findOrFail($id);
 
-    // Gunakan cara manual save agar lebih eksplisit
-    $order->status = 'approved'; 
-    $order->save();
+    if ($order->status !== 'approved') {
+        // 1. Update status order jadi approved
+        $order->status = 'approved';
+        $order->save();
+
+        // 2. GENERATE TIKET (Ini bagian yang kurang!)
+        foreach ($order->orderItems as $item) {
+            // Kita buat looping berdasarkan quantity yang dibeli
+            for ($i = 0; $i < $item->quantity; $i++) {
+                \App\Models\Ticket::create([
+                    'user_id'        => $order->user_id,
+                    'event_id'       => $order->event_id,
+                    'ticket_type_id' => $item->ticket_type_id,
+                    'order_item_id'  => $item->id,
+                    'ticket_code'    => 'TIX-' . strtoupper(\Illuminate\Support\Str::random(12)),
+                    'status'         => 'active', // Tiket langsung aktif
+                ]);
+            }
+        }
+    }
 
     return view('user.order.success', compact('order'));
 }
+
+    /**
+     * Step 6: Daftar Tiket Saya
+     */
+    public function index()
+    {
+        $orders = Order::with('event')
+            ->where('user_id', auth()->id())
+            ->where('status', 'approved')
+            ->latest()
+            ->get();
+
+        return view('user.order.index', compact('orders'));
+    }
 }

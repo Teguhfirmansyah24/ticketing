@@ -139,9 +139,9 @@
                                 class="group bg-white rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all overflow-hidden flex flex-col">
 
                                 <div class="relative aspect-[4/3] overflow-hidden">
-                                    <img src="{{ $event->banner_image ?? 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600' }}"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        alt="{{ $event->title }}">
+                                    <img src="{{ $event->banner_image ? asset('storage/' . $event->banner_image) : 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=800&auto=format&fit=crop' }}"
+                                        alt="{{ $event->title }}"
+                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                     <div class="absolute top-4 left-4">
                                         <span
                                             class="bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black uppercase text-blue-600 shadow-sm">
@@ -184,9 +184,9 @@
                                     <div class="flex items-center gap-3">
                                         <div
                                             class="w-8 h-8 rounded-full overflow-hidden border border-slate-100 flex-shrink-0">
-                                            @if ($creator->profile_photo_path)
-                                                <img src="{{ asset('storage/' . $creator->profile_photo_path) }}"
-                                                    class="w-full h-full object-cover">
+                                            @if ($creator->avatar)
+                                                <img src="{{ asset('storage/' . $creator->avatar) }}"
+                                                    alt="{{ $creator->name }}" class="w-full h-full object-cover">
                                             @else
                                                 <div
                                                     class="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
