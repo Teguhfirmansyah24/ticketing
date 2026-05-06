@@ -57,12 +57,6 @@
            <i class="fas fa-tags text-base group-hover:text-blue-400 w-5 text-center"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Kategori</span>
         </a>
-
-        <div class="mt-6 px-5 mb-1.5">
-            <span x-show="sidebarOpen" x-transition.opacity
-                class="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">Akun</span>
-            <hr x-show="!sidebarOpen" class="border-white/10">
-        </div>
     </nav>
 
     <div class="p-3 border-t border-white/5 mt-auto">
