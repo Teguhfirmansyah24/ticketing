@@ -8,8 +8,9 @@ use App\Http\Controllers\BotManController;
 use App\Http\Controllers\ProfileController;
 
 // Admin Controllers
+// Pastikan nama file di folder app/Http/Controllers/Admin adalah EventController.php
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\AdminEventController;
+use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 
 // User/Member Controllers
@@ -42,7 +43,7 @@ Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // =============================================================
-// MEMBER / USER ROUTES (Satu Blok Saja)
+// MEMBER / USER ROUTES
 // =============================================================
 Route::middleware(['auth', 'role:user'])->prefix('member')->name('member.')->group(function () {
     Route::get('/my-tickets',        [UserTiketController::class, 'index'])->name('tiket.index');
@@ -80,7 +81,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 });
 
 // =============================================================
-// ADMIN ROUTES (Dibersihkan dari duplikasi)
+// ADMIN ROUTES
 // =============================================================
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
@@ -98,9 +99,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('tickets/{ticket}', [AdminTicketController::class, 'destroy'])->name('tickets.destroy');
     Route::post('/tickets/{id}/checkout', [AdminTicketController::class, 'checkout'])->name('tickets.checkout');
 
-    // Resources
-    Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
-    Route::resource('Kategori', App\Http\Controllers\Admin\CategoriesController::class);
+    // Resources (Pastikan nama class sesuai dengan file di folder Admin)
+    Route::resource('access', App\Http\Controllers\Admin\AccessController::class);
+    Route::resource('kategori', App\Http\Controllers\Admin\CategoriesController::class);
 });
 
 // =============================================================
