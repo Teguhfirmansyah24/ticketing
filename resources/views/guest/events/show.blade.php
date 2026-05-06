@@ -205,9 +205,9 @@
                             <div class="flex items-center gap-4">
                                 <div
                                     class="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-2xl ring-4 ring-slate-100 overflow-hidden
-                                    {{ $event->creator->profile_photo_path ? '' : 'bg-slate-800' }}">
-                                    @if ($event->creator->profile_photo_path)
-                                        <img src="{{ asset('storage/' . $event->creator->profile_photo_path) }}"
+                                    {{ $event->creator->avatar ? '' : 'bg-slate-800' }}">
+                                    @if ($event->creator->avatar)
+                                        <img src="{{ asset('storage/' . $event->creator->avatar) }}"
                                             class="w-full h-full object-cover">
                                     @else
                                         {{ strtoupper(substr($event->creator->name, 0, 1)) }}
@@ -245,7 +245,7 @@
                                     </a>
                                 @else
                                     <a href="{{ route('login') }}"
-                                        class="inline-block bg-blue-600 text-white px-4 py-3.5 rounded-xl font-bold text-lg shadow-lg hover:bg-blue-700 active:scale-95 transition-all text-center">
+                                        class="inline-block bg-blue-600 text-white px-4 py-3.5 rounded-xl font-bold text-sm shadow-lg hover:bg-blue-700 active:scale-95 transition-all text-center">
                                         Login untuk Beli
                                     </a>
                                 @endauth
