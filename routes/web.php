@@ -110,14 +110,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/event-admin', [App\Http\Controllers\Admin\EventController::class, 'index'])->name('event-admin');
-
-<<<<<<< HEAD
     Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
-=======
-    Route::resource('access',App\Http\Controllers\Admin\AccesController::class);
-    
-    Route::resource('Kategori',App\Http\Controllers\Admin\CategoriesController::class);
->>>>>>> a161e1853a514f688220aac3457b0da632bfcc67
+
+    Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
+
+    Route::resource('Kategori', App\Http\Controllers\Admin\CategoriesController::class);
 });
 
 require __DIR__ . '/auth.php';
