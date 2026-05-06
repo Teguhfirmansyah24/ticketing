@@ -15,7 +15,7 @@ use App\Http\Controllers\User\TiketController as UserTiketController;
 use App\Http\Controllers\User\OrderController as UserOrderController;
 use App\Http\Controllers\User\ProfileController as UserProfileController;
 use App\Http\Controllers\User\PengaturanController as UserPengaturanController;
-
+use App\Http\Controllers\User\TiketController;
 // Creator Controller
 use App\Http\Controllers\Creator\DashboardController as CreatorDashboardController;
 use App\Http\Controllers\Creator\EventSayaController as CreatorEventSayaController;
@@ -121,9 +121,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Update dan Delete cukup pakai {ticket} karena ID ticket sudah unik
     Route::put('tickets/{ticket}', [AdminTicketController::class, 'update'])->name('tickets.update');
     Route::delete('tickets/{ticket}', [AdminTicketController::class, 'destroy'])->name('tickets.destroy');
+    Route::post('/tickets/{id}/checkout', [App\Http\Controllers\Admin\TicketController::class, 'checkout'])->name('tickets.checkout');
     Route::get('/event/{id}/edit', [AdminEventController::class, 'edit'])->name('events.edit');
     Route::put('/event/{id}', [AdminEventController::class, 'update'])->name('events.update');
     Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
+});
+Route::middleware(['auth', 'role:user'])->prefix('member')->as('member.')->group(function () {
+    Route::get('/my-tickets', [TiketController::class, 'index'])->name('tiket.index');
+    // Tambahkan ini kalau belum ada:
+    Route::get('/my-tickets/{id}', [TiketController::class, 'show'])->name('tiket.show');
 });
 
 require __DIR__ . '/auth.php';

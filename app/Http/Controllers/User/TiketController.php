@@ -9,36 +9,36 @@ use Illuminate\Http\Request;
 class TiketController extends Controller
 {
     public function index()
-    {
-        // Tiket aktif — event belum selesai
-        $activeTickets = Ticket::with(['event.category', 'ticketType', 'orderItem.order'])
-            ->where('user_id', auth()->id())
-            ->where('status', 'active')
-            ->whereHas('event', fn($q) => $q->where('end_date', '>=', now()))
-            ->latest()
-            ->get();
+{
+    $userId = auth()->id();
 
-        // Tiket lalu — event sudah selesai atau tiket sudah dipakai
-        $pastTickets = Ticket::with(['event.category', 'ticketType', 'orderItem.order'])
-            ->where('user_id', auth()->id())
-            ->where(function ($q) {
-                $q->where('status', 'used')
-                    ->orWhere('status', 'cancelled')
-                    ->orWhereHas('event', fn($q) => $q->where('end_date', '<', now()));
-            })
-            ->latest()
-            ->get();
+    // Ambil tiket yang ordernya sudah lunas / approved
+    $activeTickets = Ticket::where('user_id', $userId)
+        ->whereHas('orderItem.order', function($query) {
+            $query->where('status', 'approved'); // Sesuaikan dengan nama status di DB kamu
+        })
+        ->where('status', 'active') // Pastikan status tiketnya aktif
+        ->with(['event', 'ticketType', 'orderItem.order'])
+        ->get();
 
-        return view('user.tiket.index', compact('activeTickets', 'pastTickets'));
-    }
+    $pastTickets = Ticket::where('user_id', $userId)
+        ->where(function($query) {
+            $query->where('status', 'used')
+                  ->orWhere('status', 'cancelled');
+        })
+        ->get();
 
-    public function show($ticketCode)
-    {
-        $ticket = Ticket::with(['event.category', 'event.creator', 'ticketType', 'orderItem.order'])
-            ->where('user_id', auth()->id())
-            ->where('ticket_code', $ticketCode)
-            ->firstOrFail();
+    return view('user.tiket.index', compact('activeTickets', 'pastTickets'));
+}
 
-        return view('user.tiket.show', compact('ticket'));
-    }
+    public function show($ticket_code)
+{
+    // Cari tiket berdasarkan kode yang diklik
+    $ticket = Ticket::where('ticket_code', $ticket_code)
+        ->where('user_id', auth()->id())
+        ->with(['event', 'ticketType', 'orderItem.order'])
+        ->firstOrFail();
+
+    return view('user.tiket.show', compact('ticket'));
+}
 }   
