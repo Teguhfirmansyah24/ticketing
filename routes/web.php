@@ -10,7 +10,7 @@ use App\Http\Controllers\Guest\CreatorController;
 use App\Http\Controllers\Guest\HelpController;
 use App\Http\Controllers\Guest\BlogController;
 
-// User Controller (Pastikan alias ini digunakan di bawah)
+// User Controller
 use App\Http\Controllers\User\TiketController as UserTiketController;
 use App\Http\Controllers\User\OrderController as UserOrderController;
 use App\Http\Controllers\User\ProfileController as UserProfileController;
@@ -22,8 +22,11 @@ use App\Http\Controllers\Creator\EventSayaController as CreatorEventSayaControll
 use App\Http\Controllers\Creator\KelolaAksesController as CreatorKelolaAksesController;
 use App\Http\Controllers\Creator\ProfileController as CreatorProfileController;
 
-// Admin Controller
+// Admin Controller (Gunakan use statement agar kode di bawah lebih bersih)
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventController as AdminEventController;
+use App\Http\Controllers\Admin\TicketController as AdminTicketController;
+use App\Http\Controllers\Admin\AccesController as AdminAccessController;
 
 // =============================================================
 // PUBLIC ROUTES
@@ -61,9 +64,9 @@ Route::middleware(['auth', 'role:user'])->prefix('creator')->name('creator.')->g
     Route::get('/events/{id}/stats', [CreatorEventSayaController::class, 'show'])->name('eventsaya.stats');
 
     // Kelola Akses
-    Route::get('/kelola-akses',       [CreatorKelolaAksesController::class, 'index'])->name('kelolaakses.index');
-    Route::get('/kelola-akses/create',       [CreatorKelolaAksesController::class, 'create'])->name('kelolaakses.create');
-    Route::post('/kelola-akses/create',      [CreatorKelolaAksesController::class, 'store'])->name('kelolaakses.store');
+    Route::get('/kelola-akses', [CreatorKelolaAksesController::class, 'index'])->name('kelolaakses.index');
+    Route::get('/kelola-akses/create', [CreatorKelolaAksesController::class, 'create'])->name('kelolaakses.create');
+    Route::post('/kelola-akses/create', [CreatorKelolaAksesController::class, 'store'])->name('kelolaakses.store');
     Route::delete('/kelola-akses/{id}', [CreatorKelolaAksesController::class, 'destroy'])->name('kelolaakses.destroy');
     Route::patch('/kelola-akses/{id}/toggle', [CreatorKelolaAksesController::class, 'toggleStatus'])->name('kelolaakses.toggle');
 
@@ -73,25 +76,17 @@ Route::middleware(['auth', 'role:user'])->prefix('creator')->name('creator.')->g
 });
 
 // =============================================================
-// ORDER & PAYMENT ROUTES (MODERN FLOW)
+// ORDER & PAYMENT ROUTES
 // =============================================================
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/creator/buat-event', [CreatorController::class, 'create'])->name('creator.create');
     Route::post('/creator/buat-event', [CreatorController::class, 'store'])->name('creator.store');
 
-    // Alur Pemesanan Tiket
     Route::get('/events/{id}/buy',      [UserOrderController::class, 'create'])->name('orders.create');
     Route::post('/orders',              [UserOrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/confirm/{id}',  [UserOrderController::class, 'confirm'])->name('orders.confirm');
-    
-    // Alur Pembayaran & Midtrans
     Route::get('/payment/token/{order}', [UserOrderController::class, 'getSnapToken'])->name('orders.token');    
     Route::get('/orders/success/{id}',   [UserOrderController::class, 'paymentSuccess'])->name('orders.success');
-
-    // Route Tambahan (Opsional sesuai kodingan lama)
-    Route::post('/orders/pay',          [UserOrderController::class, 'pay'])->name('orders.pay');
-    Route::get('/orders/{id}/payment',  [UserOrderController::class, 'payment'])->name('orders.payment');
-    Route::post('/orders/{id}/upload',  [UserOrderController::class, 'uploadProof'])->name('orders.upload');
 });
 
 // =============================================================
@@ -101,9 +96,20 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/event-admin', [App\Http\Controllers\Admin\EventController::class, 'index'])->name('event-admin');
+    // Manajemen Event
+    Route::get('/event-admin', [AdminEventController::class, 'index'])->name('event-admin');
+    Route::resource('access', AdminAccessController::class);
 
-    Route::resource('access',App\Http\Controllers\Admin\AccesController::class);
+    // CRUD TIKET
+    // Tetap menggunakan {event} untuk index dan store agar bisa mengambil event_id
+    Route::get('event/{event}/tickets', [AdminTicketController::class, 'index'])->name('tickets.index');
+    Route::post('event/{event}/tickets', [AdminTicketController::class, 'store'])->name('tickets.store');
+    
+    // Update dan Delete cukup pakai {ticket} karena ID ticket sudah unik
+    Route::put('tickets/{ticket}', [AdminTicketController::class, 'update'])->name('tickets.update');
+    Route::delete('tickets/{ticket}', [AdminTicketController::class, 'destroy'])->name('tickets.destroy');
+    Route::get('/event/{id}/edit', [AdminEventController::class, 'edit'])->name('events.edit');
+    Route::put('/event/{id}', [AdminEventController::class, 'update'])->name('events.update');
 });
 
 require __DIR__ . '/auth.php';
