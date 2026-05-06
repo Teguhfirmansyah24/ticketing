@@ -25,46 +25,46 @@
     </div>
 
     @push('scripts')
-        <script>
-            // Data dari Chart Satu
-            const ctx1 = document.getElementById('chartSatu').getContext('2d');
-            new Chart(ctx1, {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
-                    datasets: [{
-                        label: 'Data Masuk',
-                        data: [12, 19, 8, 15, 10, 22],
-                        backgroundColor: '#4F46E5', // Warna Indigo Tailwind
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    responsive: true
-                }
-            });
+    <script>
+        // Data dari Chart Satu
+        const ctx1 = document.getElementById('chartSatu').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                datasets: [{
+                    label: 'Data Masuk',
+                    data: [12, 19, 8, 15, 10, 22],
+                    backgroundColor: '#4F46E5', // Warna Indigo Tailwind
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true
+            }
+        });
 
-            // Data dari Chart Dua
-            const ctx2 = document.getElementById('chartDua').getContext('2d');
-            new Chart(ctx2, {
-                type: 'line',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
-                    datasets: [{
-                        label: 'Selesai',
-                        data: [5, 12, 10, 18, 14, 25],
-                        borderColor: '#10B981', // Warna Green Tailwind
-                        tension: 0.3,
-                        fill: true,
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)'
-                    }]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    responsive: true
-                }
-            });
-        </script>
+        // Data dari Chart Dua
+        const ctx2 = document.getElementById('chartDua').getContext('2d');
+        new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+                datasets: [{
+                    label: 'Selesai',
+                    data: [5, 12, 10, 18, 14, 25],
+                    borderColor: '#10B981', // Warna Green Tailwind
+                    tension: 0.3,
+                    fill: true,
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)'
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true
+            }
+        });
+    </script>
     @endpush
 </x-admin-layout>
