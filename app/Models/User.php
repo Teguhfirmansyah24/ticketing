@@ -76,6 +76,11 @@ class User extends Authenticatable
         return $this->hasMany(Ticket::class);
     }
 
+    public function bankAccounts()
+    {
+        return $this->hasMany(BankAccount::class);
+    }
+
     // ==================
     // Relasi sebagai Validator
     // ==================

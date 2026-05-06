@@ -51,27 +51,17 @@
             <i class="fas fa-user-shield text-base group-hover:text-blue-400 w-5 text-center"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Kelola Akses</span>
         </a>
+        <a href="{{ route('admin.Kategori.index') }}"
+            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.Kategori') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
+           <i class="fas fa-tags text-base group-hover:text-blue-400 w-5 text-center"></i>
+            <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Kategori</span>
+        </a>
 
         <div class="mt-6 px-5 mb-1.5">
             <span x-show="sidebarOpen" x-transition.opacity
                 class="text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">Akun</span>
             <hr x-show="!sidebarOpen" class="border-white/10">
         </div>
-
-        <a href=""
-            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('') ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-white/5 group' }}">
-            <i
-                class="fas fa-user text-base w-5 text-center {{ request()->routeIs('') ? '' : 'group-hover:text-blue-400' }}"></i>
-            <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-medium">Informasi Dasar</span>
-        </a>
-
-        <a href=""
-            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('') ? 'bg-blue-600 text-white' : 'text-slate-400 hover:bg-white/5 group' }}">
-            <i
-                class="fas fa-cog text-base w-5 text-center {{ request()->routeIs('') ? '' : 'group-hover:text-blue-400' }}"></i>
-            <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-medium">Pengaturan</span>
-        </a>
-
     </nav>
 
     <div class="p-3 border-t border-white/5 mt-auto">

@@ -21,6 +21,7 @@ use App\Http\Controllers\Creator\DashboardController as CreatorDashboardControll
 use App\Http\Controllers\Creator\EventSayaController as CreatorEventSayaController;
 use App\Http\Controllers\Creator\KelolaAksesController as CreatorKelolaAksesController;
 use App\Http\Controllers\Creator\ProfileController as CreatorProfileController;
+use App\Http\Controllers\Creator\RekeningController as CreatorRekeningController;
 
 // Admin Controller (Gunakan use statement agar kode di bawah lebih bersih)
 use App\Http\Controllers\Admin\DashboardController;
@@ -73,6 +74,13 @@ Route::middleware(['auth', 'role:user'])->prefix('creator')->name('creator.')->g
     // Profile
     Route::get('/profile', [CreatorProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile', [CreatorProfileController::class, 'update'])->name('profile.update');
+
+    // Rekening
+    Route::get('/rekening',              [CreatorRekeningController::class, 'index'])->name('rekening.index');
+    Route::get('/rekening/create',       [CreatorRekeningController::class, 'create'])->name('rekening.create');
+    Route::post('/rekening',             [CreatorRekeningController::class, 'store'])->name('rekening.store');
+    Route::delete('/rekening/{id}',      [CreatorRekeningController::class, 'destroy'])->name('rekening.destroy');
+    Route::patch('/rekening/{id}/primary', [CreatorRekeningController::class, 'setPrimary'])->name('rekening.primary');
 });
 
 // =============================================================
@@ -110,6 +118,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('tickets/{ticket}', [AdminTicketController::class, 'destroy'])->name('tickets.destroy');
     Route::get('/event/{id}/edit', [AdminEventController::class, 'edit'])->name('events.edit');
     Route::put('/event/{id}', [AdminEventController::class, 'update'])->name('events.update');
+    Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
 });
 
 require __DIR__ . '/auth.php';
