@@ -104,6 +104,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/event-admin', [App\Http\Controllers\Admin\EventController::class, 'index'])->name('event-admin');
 
     Route::resource('access',App\Http\Controllers\Admin\AccesController::class);
+    
+    Route::resource('Kategori',App\Http\Controllers\Admin\CategoriesController::class);
 });
 
 require __DIR__ . '/auth.php';
