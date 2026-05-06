@@ -459,11 +459,12 @@
         </div>
     </div>
     {{-- End Event --}}
-
+    
     <style>
         /* Sembunyikan scrollbar di semua browser */
         .overflow-x-auto::-webkit-scrollbar {
             display: none;
         }
     </style>
+
 </x-app-layout>

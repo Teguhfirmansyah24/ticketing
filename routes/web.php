@@ -1,27 +1,20 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-// Public Controller
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\Guest\EventController;
-use App\Http\Controllers\Guest\CreatorController;
-use App\Http\Controllers\Guest\HelpController;
-use App\Http\Controllers\Guest\BlogController;
-
-// User Controller (Pastikan alias ini digunakan di bawah)
-use App\Http\Controllers\User\TiketController as UserTiketController;
-use App\Http\Controllers\User\OrderController as UserOrderController;
-use App\Http\Controllers\User\ProfileController as UserProfileController;
-use App\Http\Controllers\User\PengaturanController as UserPengaturanController;
-
-// Creator Controller
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\BotManController;
 use App\Http\Controllers\Creator\DashboardController as CreatorDashboardController;
 use App\Http\Controllers\Creator\EventSayaController as CreatorEventSayaController;
-
-// Admin Controller
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Guest\BlogController;
+use App\Http\Controllers\Guest\CreatorController;
+use App\Http\Controllers\Guest\EventController;
+use App\Http\Controllers\Guest\HelpController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\OrderController as UserOrderController;
+use App\Http\Controllers\User\PengaturanController as UserPengaturanController;
+use App\Http\Controllers\User\ProfileController as UserProfileController;
+use App\Http\Controllers\User\TiketController as UserTiketController;
+use Illuminate\Support\Facades\Route;
 
 // =============================================================
 // PUBLIC ROUTES
@@ -94,5 +87,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     
     Route::resource('Kategori',App\Http\Controllers\Admin\CategoriesController::class);
 });
+
+//bot chat
+Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
+Route::get('/botman/chat', [BotManController::class, 'chat'])->name('botman.chat'); // UI frame
 
 require __DIR__ . '/auth.php';
