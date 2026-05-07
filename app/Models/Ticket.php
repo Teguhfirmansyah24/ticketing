@@ -39,6 +39,10 @@ class Ticket extends Model
     {
         return $this->belongsTo(OrderItem::class);
     }
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 
     public function validation()
     {
