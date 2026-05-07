@@ -105,8 +105,9 @@
                                     class="relative overflow-hidden rounded-2xl mb-3 transition-all duration-300 group-hover:shadow-md border border-gray-100 bg-white">
                                     <div class="h-24 flex items-center justify-center p-4">
                                         @if ($category->icon)
-                                            <img src="{{ $category->icon }}" alt="{{ $category->name }}"
-                                                class="w-16 h-16 object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300">
+                                            <img src="{{ asset('storage/' . $category->icon) }}"
+                                                alt="{{ $category->name }}"
+                                                class="w-full h-full object-cover rounded-xl drop-shadow-md group-hover:scale-110 transition-transform duration-300">
                                         @else
                                             <svg class="w-16 h-16 text-white opacity-80" fill="none"
                                                 stroke="currentColor" viewBox="0 0 24 24">
@@ -465,7 +466,7 @@
         </div>
     </div>
     {{-- End Event --}}
-    
+
     <style>
         /* Sembunyikan scrollbar di semua browser */
         .overflow-x-auto::-webkit-scrollbar {

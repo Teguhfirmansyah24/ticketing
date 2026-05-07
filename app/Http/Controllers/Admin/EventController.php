@@ -4,8 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Models\Category;
+use App\Models\EventCategory;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class EventController extends Controller
@@ -36,7 +37,7 @@ class EventController extends Controller
                     break;
                 case 'this_month':
                     $query->whereMonth('start_date', $now->month)
-                          ->whereYear('start_date', $now->year);
+                        ->whereYear('start_date', $now->year);
                     break;
             }
         }
@@ -68,12 +69,13 @@ class EventController extends Controller
         // 5. Logika Sorting (Perbaikan Join agar tidak duplikat)
         if (in_array($request->sort, ['price_asc', 'price_desc'])) {
             $direction = ($request->sort === 'price_asc') ? 'asc' : 'desc';
-            
+
             // Menggunakan subquery agar row event tidak double jika tiketnya banyak
-            $query->addSelect(['min_price' => \App\Models\TicketType::select('price')
-                ->whereColumn('event_id', 'events.id')
-                ->orderBy('price', 'asc')
-                ->limit(1)
+            $query->addSelect([
+                'min_price' => \App\Models\TicketType::select('price')
+                    ->whereColumn('event_id', 'events.id')
+                    ->orderBy('price', 'asc')
+                    ->limit(1)
             ])->orderBy('min_price', $direction);
         } elseif ($request->sort === 'oldest') {
             $query->oldest();
@@ -82,65 +84,65 @@ class EventController extends Controller
         }
 
         $events = $query->paginate(6)->withQueryString();
-        $locations = Event::distinct()->pluck('location'); 
+        $locations = Event::distinct()->pluck('location');
 
         return view('admin.event.index', compact('events', 'locations'));
     }
 
     // ... method lainnya tetap
-    public function create() 
-    { 
+    public function create()
+    {
         return view('admin.event.create');
     }
 
-    public function store(Request $request) 
-    { 
+    public function store(Request $request)
+    {
         /* Logika simpan data */
     }
 
-    public function show(string $id) 
+    public function show(string $id)
     {
-         /* Logika detail */ 
+        /* Logika detail */
     }
 
-    public function edit(string $id) 
-{
-    $event = Event::findOrFail($id);
-    // Ambil semua kategori agar bisa dipilih di dropdown menu
-    $categories = Category::all(); 
-    
-    return view('admin.event.edit', compact('event', 'categories'));   
-}
+    public function edit(string $id)
+    {
+        $event = Event::findOrFail($id);
+        // Ambil semua kategori agar bisa dipilih di dropdown menu
+        $categories = EventCategory::all();
 
-public function update(Request $request, string $id) 
-{
-    $event = Event::findOrFail($id);
-    
-    $validated = $request->validate([
-        'title'       => 'required|string|max:255',
-        'location'    => 'required',
-        'category_id' => 'required|exists:categories,id', // Tambahkan validasi FK
-        'description' => 'nullable|string',
-        'start_date'  => 'required|date',
-        'end_date'    => 'required|date|after:start_date',
-        // Tambahkan field lain sesuai migration kamu
-    ]);
+        return view('admin.event.edit', compact('event', 'categories'));
+    }
 
-    $event->update($validated);
+    public function update(Request $request, string $id)
+    {
+        $event = Event::findOrFail($id);
 
-    return redirect()->route('admin.event.index')->with('success', 'Event berhasil diperbarui!');
-}
+        $validated = $request->validate([
+            'title'       => 'required|string|max:255',
+            'location'    => 'required',
+            'category_id' => 'required|exists:categories,id', // Tambahkan validasi FK
+            'description' => 'nullable|string',
+            'start_date'  => 'required|date',
+            'end_date'    => 'required|date|after:start_date',
+            // Tambahkan field lain sesuai migration kamu
+        ]);
+
+        $event->update($validated);
+
+        return redirect()->route('admin.event.index')->with('success', 'Event berhasil diperbarui!');
+    }
 
     public function destroy(string $id)
-{
-    $event = Event::findOrFail($id);
-    
-    // Hapus foto dari storage jika ada
-    if ($event->banner_image) {
-        Storage::disk('public')->delete($event->banner_image);
+    {
+        $event = Event::findOrFail($id);
+
+        // Hapus foto dari storage jika ada
+        if ($event->banner_image) {
+            Storage::disk('public')->delete($event->banner_image);
+        }
+
+        $event->delete();
+        return redirect()->back()->with('success', 'Event berhasil dihapus');
     }
-    
-    $event->delete();
-    return redirect()->back()->with('success', 'Event berhasil dihapus');
-}
 }
