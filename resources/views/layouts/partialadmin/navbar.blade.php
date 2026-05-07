@@ -8,12 +8,6 @@
 
             <!-- Right Side: Actions & Profile -->
             <div class="flex items-center gap-6">
-                <!-- Secondary Action -->
-                <a href=""
-                    class="hidden lg:flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-blue-600 transition-colors">
-                    <i class="fas fa-plus-circle text-xs"></i>
-                    <span>Buat Event</span>
-                </a>
 
                 <!-- Profile Dropdown -->
                 <div class="relative">
@@ -79,6 +73,11 @@
                                 class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
                                 <i class="fas fa-tag w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Kategori</span>
+                            </a>
+                            <a href="{{route('admin.pembayaran.index')}}"
+                                class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
+                                <i class="fas fa-wallet w-5 text-slate-400 group-hover:text-indigo-500"></i>
+                                <span>Pembayaran</span>
                             </a>
                         </div>
 

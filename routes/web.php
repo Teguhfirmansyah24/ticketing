@@ -23,6 +23,8 @@ use App\Http\Controllers\Creator\EventSayaController as CreatorEventSayaControll
 use App\Http\Controllers\Creator\KelolaAksesController as CreatorKelolaAksesController;
 use App\Http\Controllers\Creator\ProfileController as CreatorProfileController;
 use App\Http\Controllers\Creator\RekeningController as CreatorRekeningController;
+use App\Http\Controllers\Creator\LegalController as CreatorLegalController;
+use App\Http\Controllers\Creator\PengaturanController as CreatorPengaturanController;
 
 // Admin Controller (Gunakan use statement agar kode di bawah lebih bersih)
 use App\Http\Controllers\Admin\DashboardController;
@@ -30,6 +32,7 @@ use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\Admin\AccesController as AdminAccessController;
 use App\Http\Controllers\Admin\PengelolaanPembayaranController as AdminPengelolaanPembayaranController;
+use App\Http\Controllers\Admin\ReportController as ReportController;
 
 // =============================================================
 // PUBLIC ROUTES
@@ -83,6 +86,14 @@ Route::middleware(['auth', 'role:user'])->prefix('creator')->name('creator.')->g
     Route::post('/rekening',             [CreatorRekeningController::class, 'store'])->name('rekening.store');
     Route::delete('/rekening/{id}',      [CreatorRekeningController::class, 'destroy'])->name('rekening.destroy');
     Route::patch('/rekening/{id}/primary', [CreatorRekeningController::class, 'setPrimary'])->name('rekening.primary');
+
+    // Informasi Legal
+    Route::get('/legal',        [CreatorLegalController::class, 'index'])->name('legal.index');
+    Route::get('/legal/create', [CreatorLegalController::class, 'create'])->name('legal.create');
+    Route::post('/legal',       [CreatorLegalController::class, 'store'])->name('legal.store');
+
+    // Pengaturan
+    Route::get('/pengaturan', [CreatorPengaturanController::class, 'index'])->name('pengaturan.index');
 });
 
 // =============================================================
@@ -111,6 +122,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
 
     Route::resource('Kategori', App\Http\Controllers\Admin\CategoriesController::class);
+    route::resource('report', App\Http\Controllers\Admin\ReportController::class);
     // Manajemen Event
     Route::get('/event-admin', [AdminEventController::class, 'index'])->name('event-admin');
     Route::resource('access', AdminAccessController::class);

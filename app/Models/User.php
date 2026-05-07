@@ -96,4 +96,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Payment::class, 'verified_by');
     }
+
+    public function legalDocuments()
+    {
+        return $this->hasOne(LegalDocument::class);
+    }
+
+    public function latestLegal()
+    {
+        return $this->hasOne(LegalDocument::class)->latest();
+    }
 }

@@ -12,7 +12,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
+        $user = auth()->user()->load('legalDocuments');
 
         // Event aktif milik creator
         $activeEvents = Event::where('user_id', $user->id)
@@ -54,8 +54,11 @@ class DashboardController extends Controller
         $missions = [
             'phone'   => !empty($user->phone),
             'profile' => !empty($user->birth_date) && !empty($user->gender),
-            'legal'   => !empty($user->id_number ?? null),
+            'legal'   => $user->legalDocuments?->status === 'verified',
         ];
+
+        $legalStatus = $user->legalDocuments?->status ?? 'empty';
+
         $missionsDone    = collect($missions)->filter()->count();
         $missionsTotal   = count($missions);
         $missionsPercent = ($missionsDone / $missionsTotal) * 100;
@@ -70,7 +73,8 @@ class DashboardController extends Controller
             'missions',
             'missionsDone',
             'missionsTotal',
-            'missionsPercent'
+            'missionsPercent',
+            'legalStatus'
         ));
     }
 }

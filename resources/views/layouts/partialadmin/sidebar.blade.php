@@ -63,6 +63,11 @@
             <i class="fas fa-money-bill-wave text-base group-hover:text-blue-400 w-5 text-center"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Pembayaran</span>
         </a>
+        <a href="{{ route('admin.report.index') }}"
+            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.report.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
+            <i class="fas fa-chart-line text-base group-hover:text-blue-400 w-5 text-center"></i>
+            <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Laporan</span>
+        </a>
 
     </nav>
 
