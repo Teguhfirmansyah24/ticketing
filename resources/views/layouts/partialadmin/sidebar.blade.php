@@ -56,6 +56,11 @@
            <i class="fas fa-tags text-base group-hover:text-blue-400 w-5 text-center"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Kategori</span>
         </a>
+        <a href="{{ route('admin.pembayaran.index') }}"
+            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.Kategori') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
+           <i class="fas fa-money-bill-wave text-base group-hover:text-blue-400 w-5 text-center"></i>
+            <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Pengelolaan Pembayaran</span>
+        </a>
     </nav>
 
     <div class="p-3 border-t border-white/5 mt-auto">
