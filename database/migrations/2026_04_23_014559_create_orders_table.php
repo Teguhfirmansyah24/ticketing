@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('order_code')->unique();
             $table->decimal('total_amount', 10, 2);
-            $table->enum('status', ['pending', 'paid', 'cancelled', 'expired'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'cancelled', 'expired'])->default('pending');
             $table->timestamp('expired_at')->nullable();
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
