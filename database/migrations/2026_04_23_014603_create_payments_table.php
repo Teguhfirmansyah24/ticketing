@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('payment_code')->unique();
             $table->decimal('amount', 10, 2);
             $table->enum('method', ['bank_transfer', 'e-wallet', 'qris']);
-            $table->enum('status', ['pending', 'verifying', 'approved', 'rejected'])->default('pending');
+            $table->enum('status', ['pending','approved'])->default('pending');
             $table->string('payment_proof')->nullable();
             $table->text('note')->nullable();
             $table->timestamp('paid_at')->nullable();

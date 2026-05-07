@@ -31,6 +31,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\Admin\AccesController as AdminAccessController;
+use App\Http\Controllers\Admin\PengelolaanPembayaranController as AdminPengelolaanPembayaranController;
 use App\Http\Controllers\Admin\ReportController as ReportController;
 
 // =============================================================
@@ -137,8 +138,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/event/{id}/edit', [AdminEventController::class, 'edit'])->name('events.edit');
     Route::put('/event/{id}', [AdminEventController::class, 'update'])->name('events.update');
     Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
-    Route::resource('pembayaran', App\Http\Controllers\Admin\PengelolaanPembayaranController::class);
+
+     Route::get('/pembayaran', [AdminPengelolaanPembayaranController::class, 'index'])->name('pembayaran.index');
+    Route::post('/pembayaran/{id}/approve', [AdminPengelolaanPembayaranController::class, 'approve'])->name('orders.approve');
+    Route::get('/pembayaran/{id}', [AdminPengelolaanPembayaranController::class, 'show'])->name('orders.show');
+    Route::get('/pembayaran/{id}/edit', [AdminPengelolaanPembayaranController::class, 'edit'])->name('orders.edit');
+    Route::put('/pembayaran/{id}', [AdminPengelolaanPembayaranController::class, 'update'])->name('orders.update');
+    Route::delete('/pembayaran/{id}', [AdminPengelolaanPembayaranController::class, 'destroy'])->name('orders.destroy');
 });
+
 
 //bot chat
 Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
