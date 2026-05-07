@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->enum('type', ['individu', 'badan_hukum']);
-            $table->enum('status', ['pending', 'verified', 'rejected'])->default('pending');
+            $table->enum('status', ['unverified', 'verified', 'rejected'])->default('unverified');
 
             // Individu
             $table->string('ktp_number')->nullable();
