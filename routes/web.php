@@ -29,6 +29,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\Admin\AccesController as AdminAccessController;
+use App\Http\Controllers\Admin\ReportController as ReportController;
 
 // =============================================================
 // PUBLIC ROUTES
@@ -110,6 +111,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
 
     Route::resource('Kategori', App\Http\Controllers\Admin\CategoriesController::class);
+    route::resource('report', App\Http\Controllers\Admin\ReportController::class);
     // Manajemen Event
     Route::get('/event-admin', [AdminEventController::class, 'index'])->name('event-admin');
     Route::resource('access', AdminAccessController::class);
