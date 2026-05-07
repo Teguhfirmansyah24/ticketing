@@ -2,32 +2,33 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Import Controllers
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\BotManController;
+// Public Controller
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Guest\EventController;
+use App\Http\Controllers\Guest\CreatorController;
+use App\Http\Controllers\Guest\HelpController;
+use App\Http\Controllers\Guest\BlogController;
+use App\Http\Controllers\BotManController;
 
-// Admin Controllers
-// Pastikan nama file di folder app/Http/Controllers/Admin adalah EventController.php
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\EventController as AdminEventController;
-use App\Http\Controllers\Admin\TicketController as AdminTicketController;
-
-// User/Member Controllers
+// User Controller
 use App\Http\Controllers\User\TiketController as UserTiketController;
 use App\Http\Controllers\User\OrderController as UserOrderController;
 use App\Http\Controllers\User\ProfileController as UserProfileController;
 use App\Http\Controllers\User\PengaturanController as UserPengaturanController;
 
-// Creator Controllers
+// Creator Controller
 use App\Http\Controllers\Creator\DashboardController as CreatorDashboardController;
 use App\Http\Controllers\Creator\EventSayaController as CreatorEventSayaController;
+use App\Http\Controllers\Creator\KelolaAksesController as CreatorKelolaAksesController;
+use App\Http\Controllers\Creator\ProfileController as CreatorProfileController;
+use App\Http\Controllers\Creator\RekeningController as CreatorRekeningController;
 
-// Guest Controllers
-use App\Http\Controllers\Guest\BlogController;
-use App\Http\Controllers\Guest\EventController;
-use App\Http\Controllers\Guest\HelpController;
-use App\Http\Controllers\Guest\CreatorController;
+// Admin Controller (Gunakan use statement agar kode di bawah lebih bersih)
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\EventController as AdminEventController;
+use App\Http\Controllers\Admin\TicketController as AdminTicketController;
+use App\Http\Controllers\Admin\AccesController as AdminAccessController;
 
 // =============================================================
 // PUBLIC ROUTES
@@ -47,7 +48,7 @@ Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 // =============================================================
 Route::middleware(['auth', 'role:user'])->prefix('member')->name('member.')->group(function () {
     Route::get('/my-tickets',        [UserTiketController::class, 'index'])->name('tiket.index');
-    Route::get('/my-tickets/{id}',   [UserTiketController::class, 'show'])->name('tiket.show');
+    Route::get('/my-tickets/{code}', [UserTiketController::class, 'show'])->name('tiket.show');
 
     Route::get('/profile', [UserProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [UserProfileController::class, 'update'])->name('profile.update');
@@ -64,18 +65,35 @@ Route::middleware(['auth', 'role:user'])->prefix('creator')->name('creator.')->g
     Route::get('/events', [CreatorEventSayaController::class, 'index'])->name('eventsaya.index');
     Route::get('/events/{id}/stats', [CreatorEventSayaController::class, 'show'])->name('eventsaya.stats');
 
-    // Buat Event
-    Route::get('/buat-event', [CreatorController::class, 'create'])->name('create');
-    Route::post('/buat-event', [CreatorController::class, 'store'])->name('store');
+    // Kelola Akses
+    Route::get('/kelola-akses', [CreatorKelolaAksesController::class, 'index'])->name('kelolaakses.index');
+    Route::get('/kelola-akses/create', [CreatorKelolaAksesController::class, 'create'])->name('kelolaakses.create');
+    Route::post('/kelola-akses/create', [CreatorKelolaAksesController::class, 'store'])->name('kelolaakses.store');
+    Route::delete('/kelola-akses/{id}', [CreatorKelolaAksesController::class, 'destroy'])->name('kelolaakses.destroy');
+    Route::patch('/kelola-akses/{id}/toggle', [CreatorKelolaAksesController::class, 'toggleStatus'])->name('kelolaakses.toggle');
+
+    // Profile
+    Route::get('/profile', [CreatorProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [CreatorProfileController::class, 'update'])->name('profile.update');
+
+    // Rekening
+    Route::get('/rekening',              [CreatorRekeningController::class, 'index'])->name('rekening.index');
+    Route::get('/rekening/create',       [CreatorRekeningController::class, 'create'])->name('rekening.create');
+    Route::post('/rekening',             [CreatorRekeningController::class, 'store'])->name('rekening.store');
+    Route::delete('/rekening/{id}',      [CreatorRekeningController::class, 'destroy'])->name('rekening.destroy');
+    Route::patch('/rekening/{id}/primary', [CreatorRekeningController::class, 'setPrimary'])->name('rekening.primary');
 });
 
 // =============================================================
 // ORDER & PAYMENT ROUTES
 // =============================================================
 Route::middleware(['auth', 'role:user'])->group(function () {
-    Route::get('/events/{id}/buy',       [UserOrderController::class, 'create'])->name('orders.create');
-    Route::post('/orders',               [UserOrderController::class, 'store'])->name('orders.store');
-    Route::get('/orders/confirm/{id}',   [UserOrderController::class, 'confirm'])->name('orders.confirm');
+    Route::get('/creator/buat-event', [CreatorController::class, 'create'])->name('creator.create');
+    Route::post('/creator/buat-event', [CreatorController::class, 'store'])->name('creator.store');
+
+    Route::get('/events/{id}/buy',      [UserOrderController::class, 'create'])->name('orders.create');
+    Route::post('/orders',              [UserOrderController::class, 'store'])->name('orders.store');
+    Route::get('/orders/confirm/{id}',  [UserOrderController::class, 'confirm'])->name('orders.confirm');
     Route::get('/payment/token/{order}', [UserOrderController::class, 'getSnapToken'])->name('orders.token');
     Route::get('/orders/success/{id}',   [UserOrderController::class, 'paymentSuccess'])->name('orders.success');
 });
@@ -85,28 +103,31 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 // =============================================================
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
-    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/event-admin', [App\Http\Controllers\Admin\EventController::class, 'index'])->name('event-admin');
+    Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
 
-    // Manajemen Event & Tiket Admin
+    Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
+
+    Route::resource('Kategori', App\Http\Controllers\Admin\CategoriesController::class);
+    // Manajemen Event
     Route::get('/event-admin', [AdminEventController::class, 'index'])->name('event-admin');
-    Route::get('/event/{id}/edit', [AdminEventController::class, 'edit'])->name('events.edit');
-    Route::put('/event/{id}', [AdminEventController::class, 'update'])->name('events.update');
+    Route::resource('access', AdminAccessController::class);
 
-    // CRUD TIKET ADMIN
+    // CRUD TIKET
+    // Tetap menggunakan {event} untuk index dan store agar bisa mengambil event_id
     Route::get('event/{event}/tickets', [AdminTicketController::class, 'index'])->name('tickets.index');
     Route::post('event/{event}/tickets', [AdminTicketController::class, 'store'])->name('tickets.store');
+
+    // Update dan Delete cukup pakai {ticket} karena ID ticket sudah unik
     Route::put('tickets/{ticket}', [AdminTicketController::class, 'update'])->name('tickets.update');
     Route::delete('tickets/{ticket}', [AdminTicketController::class, 'destroy'])->name('tickets.destroy');
-    Route::post('/tickets/{id}/checkout', [AdminTicketController::class, 'checkout'])->name('tickets.checkout');
-
-    // Resources (Pastikan nama class sesuai dengan file di folder Admin)
-    Route::resource('access', App\Http\Controllers\Admin\AccessController::class);
-    Route::resource('kategori', App\Http\Controllers\Admin\CategoriesController::class);
+    Route::get('/event/{id}/edit', [AdminEventController::class, 'edit'])->name('events.edit');
+    Route::put('/event/{id}', [AdminEventController::class, 'update'])->name('events.update');
+    Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
 });
 
-// =============================================================
-// BOTMAN & AUTH
-// =============================================================
+//bot chat
 Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
 Route::get('/botman/chat', [BotManController::class, 'chat'])->name('botman.chat');
 

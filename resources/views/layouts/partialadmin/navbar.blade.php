@@ -75,7 +75,7 @@
                                 <i class="fas fa-user-shield w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Kelola Akses</span>
                             </a>
-                            <a href="{{route('admin.kategori.index')}}"
+                            <a href="{{route('admin.Kategori.index')}}"
                                 class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
                                 <i class="fas fa-tag w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Kategori</span>
