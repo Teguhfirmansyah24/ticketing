@@ -9,120 +9,145 @@
                 <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Dashboard</span>
             </div>
 
-            {{-- Section: Misi --}}
-            <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-6 shadow-sm">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                    <h3 class="text-sm font-bold text-slate-800">
-                        Ayo selesaikan misi! Lengkapi akun profilmu.
-                    </h3>
-                    <div class="flex items-center gap-3 flex-1 max-w-md">
-                        <div class="w-full bg-gray-200 rounded-full h-1.5">
-                            <div class="bg-blue-600 h-1.5 rounded-full transition-all duration-500"
-                                style="width: {{ $missionsPercent }}%"></div>
+            @if ($missionsDone < $missionsTotal)
+                {{-- Section: Misi --}}
+                <div class="bg-blue-50/50 border border-blue-100 rounded-2xl p-6 shadow-sm">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                        <h3 class="text-sm font-bold text-slate-800">
+                            Ayo selesaikan misi! Lengkapi akun profilmu.
+                        </h3>
+                        <div class="flex items-center gap-3 flex-1 max-w-md">
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-blue-600 h-1.5 rounded-full transition-all duration-500"
+                                    style="width: {{ $missionsPercent }}%"></div>
+                            </div>
+                            <span class="text-xs font-bold text-slate-400 whitespace-nowrap">
+                                {{ $missionsDone }} / {{ $missionsTotal }}
+                            </span>
                         </div>
-                        <span class="text-xs font-bold text-slate-400 whitespace-nowrap">
-                            {{ $missionsDone }} / {{ $missionsTotal }}
-                        </span>
                     </div>
-                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-                    {{-- Misi 1: Verifikasi Nomor Ponsel --}}
-                    <div
-                        class="bg-white p-4 rounded-xl border flex items-center justify-between shadow-sm transition
+                        {{-- Misi 1: Verifikasi Nomor Ponsel --}}
+                        <div
+                            class="bg-white p-4 rounded-xl border flex items-center justify-between shadow-sm transition
                         {{ $missions['phone'] ? 'border-green-200 bg-green-50/30' : 'border-blue-100' }}">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-10 h-10 rounded-lg flex items-center justify-center
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 rounded-lg flex items-center justify-center
                                 {{ $missions['phone'] ? 'bg-green-100' : 'bg-green-50' }}">
-                                @if ($missions['phone'])
-                                    <i class="fas fa-check text-green-600"></i>
-                                @else
-                                    <i class="fas fa-mobile-alt text-green-600"></i>
-                                @endif
+                                    @if ($missions['phone'])
+                                        <i class="fas fa-check text-green-600"></i>
+                                    @else
+                                        <i class="fas fa-mobile-alt text-green-600"></i>
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="text-[11px] font-bold text-slate-600 leading-tight">
+                                        Verifikasi Nomor<br>Ponselmu
+                                    </p>
+                                    @if ($missions['phone'])
+                                        <span class="text-[10px] text-green-600 font-bold">Selesai ✓</span>
+                                    @endif
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-[11px] font-bold text-slate-600 leading-tight">
-                                    Verifikasi Nomor<br>Ponselmu
-                                </p>
-                                @if ($missions['phone'])
-                                    <span class="text-[10px] text-green-600 font-bold">Selesai ✓</span>
-                                @endif
-                            </div>
+                            @if (!$missions['phone'])
+                                <a href="{{ route('member.profile.edit') }}"
+                                    class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition">
+                                    Verifikasi
+                                </a>
+                            @endif
                         </div>
-                        @if (!$missions['phone'])
-                            <a href="{{ route('member.profile.edit') }}"
-                                class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition">
-                                Verifikasi
-                            </a>
-                        @endif
-                    </div>
 
-                    {{-- Misi 2: Lengkapi Profil --}}
-                    <div
-                        class="bg-white p-4 rounded-xl border flex items-center justify-between shadow-sm transition
+                        {{-- Misi 2: Lengkapi Profil --}}
+                        <div
+                            class="bg-white p-4 rounded-xl border flex items-center justify-between shadow-sm transition
                         {{ $missions['profile'] ? 'border-green-200 bg-green-50/30' : 'border-blue-100' }}">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-10 h-10 rounded-lg flex items-center justify-center
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 rounded-lg flex items-center justify-center
                                 {{ $missions['profile'] ? 'bg-green-100' : 'bg-blue-50' }}">
-                                @if ($missions['profile'])
-                                    <i class="fas fa-check text-green-600"></i>
-                                @else
-                                    <i class="fas fa-user text-blue-600"></i>
-                                @endif
+                                    @if ($missions['profile'])
+                                        <i class="fas fa-check text-green-600"></i>
+                                    @else
+                                        <i class="fas fa-user text-blue-600"></i>
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="text-[11px] font-bold text-slate-600 leading-tight">
+                                        Lengkapi detail<br>informasi dasar
+                                    </p>
+                                    @if ($missions['profile'])
+                                        <span class="text-[10px] text-green-600 font-bold">Selesai ✓</span>
+                                    @endif
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-[11px] font-bold text-slate-600 leading-tight">
-                                    Lengkapi detail<br>informasi dasar
-                                </p>
-                                @if ($missions['profile'])
-                                    <span class="text-[10px] text-green-600 font-bold">Selesai ✓</span>
-                                @endif
-                            </div>
+                            @if (!$missions['profile'])
+                                <a href="{{ route('member.profile.edit') }}"
+                                    class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition">
+                                    Lengkapi
+                                </a>
+                            @endif
                         </div>
-                        @if (!$missions['profile'])
-                            <a href="{{ route('member.profile.edit') }}"
-                                class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition">
-                                Lengkapi
-                            </a>
-                        @endif
-                    </div>
 
-                    {{-- Misi 3: Informasi Legal --}}
-                    <div
-                        class="bg-white p-4 rounded-xl border flex items-center justify-between shadow-sm transition
-                        {{ $missions['legal'] ? 'border-green-200 bg-green-50/30' : 'border-blue-100' }}">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-10 h-10 rounded-lg flex items-center justify-center
-                                {{ $missions['legal'] ? 'bg-green-100' : 'bg-cyan-50' }}">
-                                @if ($missions['legal'])
-                                    <i class="fas fa-check text-green-600"></i>
-                                @else
-                                    <i class="fas fa-file-contract text-cyan-600"></i>
-                                @endif
+                        {{-- Misi 3: Informasi Legal (Disesuaikan dengan Status) --}}
+                        <div
+                            class="bg-white p-4 rounded-xl border flex items-center justify-between shadow-sm transition
+                        @if ($legalStatus === 'verified') border-green-200 bg-green-50/30 
+                        @elseif($legalStatus === 'pending') border-yellow-200 bg-yellow-50/30
+                        @elseif($legalStatus === 'rejected') border-red-200 bg-red-50/30
+                        @else border-blue-100 @endif">
+
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="w-10 h-10 rounded-lg flex items-center justify-center
+                                @if ($legalStatus === 'verified') bg-green-100 
+                                @elseif($legalStatus === 'pending') bg-yellow-100
+                                @elseif($legalStatus === 'rejected') bg-red-100
+                                @else bg-cyan-50 @endif">
+
+                                    @if ($legalStatus === 'verified')
+                                        <i class="fas fa-check text-green-600"></i>
+                                    @elseif($legalStatus === 'pending')
+                                        <i class="fas fa-clock text-yellow-600"></i>
+                                    @elseif($legalStatus === 'rejected')
+                                        <i class="fas fa-exclamation-triangle text-red-600"></i>
+                                    @else
+                                        <i class="fas fa-file-contract text-cyan-600"></i>
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="text-[11px] font-bold text-slate-600 leading-tight">
+                                        Lengkapi detail<br>informasi legal
+                                    </p>
+
+                                    {{-- Label Status --}}
+                                    @if ($legalStatus === 'verified')
+                                        <span class="text-[10px] text-green-600 font-bold">Terverifikasi ✓</span>
+                                    @elseif($legalStatus === 'pending')
+                                        <span class="text-[10px] text-yellow-600 font-bold">Sedang Direview</span>
+                                    @elseif($legalStatus === 'rejected')
+                                        <span class="text-[10px] text-red-600 font-bold">Ditolak / Perbaiki</span>
+                                    @endif
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-[11px] font-bold text-slate-600 leading-tight">
-                                    Lengkapi detail<br>informasi legal
-                                </p>
-                                @if ($missions['legal'])
-                                    <span class="text-[10px] text-green-600 font-bold">Selesai ✓</span>
-                                @endif
-                            </div>
+
+                            {{-- Tombol Aksi --}}
+                            @if ($legalStatus !== 'verified' && $legalStatus !== 'pending')
+                                <a href="{{ route('creator.legal.index') }}"
+                                    class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition">
+                                    {{ $legalStatus === 'rejected' ? 'Perbaiki' : 'Lengkapi' }}
+                                </a>
+                            @elseif($legalStatus === 'pending')
+                                <span
+                                    class="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-1 rounded font-bold">Proses</span>
+                            @endif
                         </div>
-                        @if (!$missions['legal'])
-                            <a href=""
-                                class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition">
-                                Lengkapi
-                            </a>
-                        @endif
-                    </div>
 
+                    </div>
                 </div>
-            </div>
+            @endif
 
             {{-- Section: Statistik --}}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
