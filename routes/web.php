@@ -125,7 +125,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/event/{id}/edit', [AdminEventController::class, 'edit'])->name('events.edit');
     Route::put('/event/{id}', [AdminEventController::class, 'update'])->name('events.update');
     Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
-    Route::resource('pembayaran', App\Http\Controllers\Admin\PengelolaanPembayaranController::class);
 });
 
 //bot chat
