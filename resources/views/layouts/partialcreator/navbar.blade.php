@@ -110,12 +110,12 @@
                                 <i class="fas fa-user w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Informasi Dasar</span>
                             </a>
-                            <a href="#"
+                            <a href="{{ route('creator.pengaturan.index') }}"
                                 class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
                                 <i class="fas fa-cog w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Pengaturan</span>
                             </a>
-                            <a href="#"
+                            <a href="{{ route('creator.legal.index') }}"
                                 class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all group">
                                 <i class="fas fa-briefcase w-5 text-slate-400 group-hover:text-indigo-500"></i>
                                 <span>Informasi Legal</span>

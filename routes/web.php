@@ -23,6 +23,8 @@ use App\Http\Controllers\Creator\EventSayaController as CreatorEventSayaControll
 use App\Http\Controllers\Creator\KelolaAksesController as CreatorKelolaAksesController;
 use App\Http\Controllers\Creator\ProfileController as CreatorProfileController;
 use App\Http\Controllers\Creator\RekeningController as CreatorRekeningController;
+use App\Http\Controllers\Creator\LegalController as CreatorLegalController;
+use App\Http\Controllers\Creator\PengaturanController as CreatorPengaturanController;
 
 // Admin Controller (Gunakan use statement agar kode di bawah lebih bersih)
 use App\Http\Controllers\Admin\DashboardController;
@@ -82,6 +84,14 @@ Route::middleware(['auth', 'role:user'])->prefix('creator')->name('creator.')->g
     Route::post('/rekening',             [CreatorRekeningController::class, 'store'])->name('rekening.store');
     Route::delete('/rekening/{id}',      [CreatorRekeningController::class, 'destroy'])->name('rekening.destroy');
     Route::patch('/rekening/{id}/primary', [CreatorRekeningController::class, 'setPrimary'])->name('rekening.primary');
+
+    // Informasi Legal
+    Route::get('/legal',        [CreatorLegalController::class, 'index'])->name('legal.index');
+    Route::get('/legal/create', [CreatorLegalController::class, 'create'])->name('legal.create');
+    Route::post('/legal',       [CreatorLegalController::class, 'store'])->name('legal.store');
+
+    // Pengaturan
+    Route::get('/pengaturan', [CreatorPengaturanController::class, 'index'])->name('pengaturan.index');
 });
 
 // =============================================================
