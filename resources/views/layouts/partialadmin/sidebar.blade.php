@@ -58,6 +58,11 @@
             <i class="fas fa-user-shield text-base group-hover:text-blue-400 w-5 text-center"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Kelola Akses</span>
         </a>
+        <a href="{{ route('admin.legal.index') }}"
+            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.legal.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
+            <i class="fas fa-balance-scale text-base group-hover:text-blue-400 w-5 text-center"></i>
+            <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Informasi Legal</span>
+        </a>
         <a href="{{ route('admin.pembayaran.index') }}"
             class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.pembayaran.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
             <i class="fas fa-money-bill-wave text-base group-hover:text-blue-400 w-5 text-center"></i>

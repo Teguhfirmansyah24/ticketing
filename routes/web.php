@@ -145,6 +145,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/pembayaran/{id}/edit', [AdminPengelolaanPembayaranController::class, 'edit'])->name('orders.edit');
     Route::put('/pembayaran/{id}', [AdminPengelolaanPembayaranController::class, 'update'])->name('orders.update');
     Route::delete('/pembayaran/{id}', [AdminPengelolaanPembayaranController::class, 'destroy'])->name('orders.destroy');
+    Route::resource('legal', App\Http\Controllers\Admin\InformationLegalController::class);
 });
 
 
