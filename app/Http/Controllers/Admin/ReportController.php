@@ -25,21 +25,21 @@ class ReportController extends Controller
                         ->filter(fn($t) => $t->order && $t->order->status === 'paid')
                         ->sum(fn($t) => $t->order->total_amount ?? 0);
 
-                    return [
-                        'id'             => $event->id,
-                        'name'           => $event->name,
-                        'category_name'  => $event->category->name ?? 'Uncategorized',
-                        'category_slug'  => $event->category
-                                            ? '/' . \Illuminate\Support\Str::slug($event->category->name)
-                                            : '/uncategorized',
-                        'sold_count'     => $event->tickets_count,
-                        'total_capacity' => $event->total_capacity ?? 0,
-                        'is_active'      => $event->status === 'published',
-                        'event_date'     => $event->start_date
-                                            ? $event->start_date->format('Y-m-d')
-                                            : now()->format('Y-m-d'),
-                        'revenue'        => $revenue,
-                    ];
+                        return [
+                            'id'             => $event->id,
+                            'title'          => $event->title,
+                            'category_name'  => $event->category->name ?? 'Uncategorized',
+                            'category_slug'  => $event->category
+                                                ? '/' . \Illuminate\Support\Str::slug($event->category->name)
+                                                : '/uncategorized',
+                            'sold_count'     => $event->tickets_count,
+                            'total_capacity' => $event->total_capacity ?? 0,
+                            'is_active'      => $event->status === 'published',
+                            'event_date'     => $event->start_date
+                                                ? $event->start_date->format('Y-m-d')
+                                                : now()->format('Y-m-d'),
+                            'revenue'        => $revenue,
+                        ];
                 });
 
             return view('admin.report.index', compact(
