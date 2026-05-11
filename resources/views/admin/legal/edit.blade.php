@@ -229,7 +229,41 @@
                                     class="w-full rounded-2xl border border-sky-100 bg-sky-50/20 px-5 py-3 focus:ring-4 focus:ring-sky-500/10 focus:border-sky-500 outline-none">
 
                             </div>
+                           <div class="space-y-2 md:col-span-2">
 
+                                <label for="verified_at"
+                                    class="block text-xs font-bold uppercase tracking-widest text-sky-900 ml-1">
+
+                                    Tanggal dan Waktu Verifikasi Dokumen
+                                </label>
+
+                                <div class="relative group">
+
+                                    <!-- ICON -->
+                                    <div
+                                        class="absolute inset-y-0 left-0 flex items-center pl-4 text-sky-300 group-focus-within:text-sky-600 transition-colors pointer-events-none">
+
+                                        <i class="fa-solid fa-calendar-check text-sm"></i>
+
+                                    </div>
+
+                                    <!-- INPUT -->
+                                     <input type="datetime-local"
+                                            id="verified_at"
+                                            name="verified_at"
+                                            value="{{ old('verified_at', optional($user->legalDocuments?->verified_at)->format('Y-m-d\TH:i')) }}"
+                                            class="w-full pl-11 pr-5 py-3.5 rounded-2xl border border-sky-100 bg-sky-50/30 text-sm font-medium text-sky-900 outline-none transition-all appearance-none cursor-pointer focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10">
+                                </div>
+
+                                @error('verified_at')
+
+                                    <p class="text-xs font-medium text-red-500 ml-1">
+                                        {{ $message }}
+                                    </p>
+
+                                @enderror
+
+                            </div>
                             <!-- ADDRESS -->
                             <div class="md:col-span-2">
 
