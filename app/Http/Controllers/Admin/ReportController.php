@@ -18,28 +18,33 @@ class ReportController extends Controller
             $activeEvents = Event::where('status', 'published')->count();
 
             $eventPerformance = Event::withCount('tickets')
-                ->with(['category', 'tickets.order'])
+                ->with(['category', 'tickets.orderItem.order'])
                 ->get()
                 ->map(function ($event) {
                     $revenue = $event->tickets
-                        ->filter(fn($t) => $t->order && $t->order->status === 'paid')
-                        ->sum(fn($t) => $t->order->total_amount ?? 0);
+                    ->filter(fn($t) =>
+                        $t->orderItem &&
+                        $t->orderItem->order &&
+                        $t->orderItem->order->status === 'paid'
+                    )
+                    ->sum(fn($t) =>
+                        $t->orderItem->order->total_amount ?? 0
+                    );
 
                         return [
-                            'id'             => $event->id,
-                            'title'          => $event->title,
-                            'category_name'  => $event->category->name ?? 'Uncategorized',
-                            'category_slug'  => $event->category
-                                                ? '/' . \Illuminate\Support\Str::slug($event->category->name)
-                                                : '/uncategorized',
-                            'sold_count'     => $event->tickets_count,
-                            'total_capacity' => $event->total_capacity ?? 0,
-                            'is_active'      => $event->status === 'published',
-                            'event_date'     => $event->start_date
-                                                ? $event->start_date->format('Y-m-d')
-                                                : now()->format('Y-m-d'),
-                            'revenue'        => $revenue,
-                        ];
+                        'id'             => $event->id,
+                        'title'          => $event->title,
+                        'category_name'  => $event->category->name ?? 'Uncategorized',
+                        'category_slug'  => $event->category
+                                            ? '/' . \Illuminate\Support\Str::slug($event->category->name)
+                                            : '/uncategorized',
+                        'sold_count'     => $event->tickets_count,
+                        'is_active'      => $event->status === 'published',
+                        'event_date'     => $event->start_date
+                                            ? $event->start_date->format('Y-m-d')
+                                            : now()->format('Y-m-d'),
+                        'revenue'        => $revenue,
+                    ];
                 });
 
             return view('admin.report.index', compact(
