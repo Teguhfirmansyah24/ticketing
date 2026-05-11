@@ -148,6 +148,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('legal', App\Http\Controllers\Admin\InformationLegalController::class);
 });
 
+//midtrans
+Route::match(['GET', 'POST'], '/midtrans/callback', function () {
+    return response()->json([
+        'status' => 'ok'
+    ]);
+});
+
 
 //bot chat
 Route::match(['get', 'post'], '/botman', [BotManController::class, 'handle']);
