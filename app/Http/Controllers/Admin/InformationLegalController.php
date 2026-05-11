@@ -79,6 +79,8 @@ class InformationLegalController extends Controller
 
         'notes' => 'nullable|string',
 
+        'verified_at' => 'nullable|date',
+
         'ktp_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         'npwp_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
         'deed_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
