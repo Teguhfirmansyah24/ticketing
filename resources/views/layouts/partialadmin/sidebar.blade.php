@@ -45,11 +45,11 @@
             class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.event-admin') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
             <i class="fas fa-file-alt text-base group-hover:text-blue-400 w-5 text-center"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Event Admin</span>
-        </a> 
+        </a>
 
         <a href="{{ route('admin.Kategori.index') }}"
-            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.kategori.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
-           <i class="fas fa-tags text-base group-hover:text-blue-400 w-5 text-center"></i>
+            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.Kategori.index') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
+            <i class="fas fa-tags text-base group-hover:text-blue-400 w-5 text-center"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Kategori</span>
         </a>
 
