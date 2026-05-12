@@ -19,6 +19,8 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
-        "@tailwindcss/typography": "^0.5.19"
+        "@ngrok/ngrok": "^1.7.0",
+        "@tailwindcss/typography": "^0.5.19",
+        "express": "^5.2.1"
     }
 }

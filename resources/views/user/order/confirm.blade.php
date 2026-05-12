@@ -166,38 +166,60 @@
         @endif
     </main>
 
-    <script src="{{ config('midtrans.snap_url') }}" data-client-key="{{ config('midtrans.client_key') }}"></script>
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
     <script type="text/javascript">
         const payButton = document.getElementById('pay-button');
+        
         if (payButton) {
             payButton.addEventListener('click', function () {
-                // Saat diklik, tombol jadi warna biru "Memproses"
+                // 1. Set Loading State
                 payButton.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Memproses...';
                 payButton.disabled = true;
 
-                fetch('/payment/token/{{ $orderId }}') 
-                    .then(response => response.json())
+                // 2. Fetch Token with Error Handling
+                fetch("{{ route('orders.token', $order->id) }}")
+                    .then(response => {
+                        if (!response.ok) {
+                            // This catches the 500 Internal Server Error
+                            return response.json().then(err => { throw new Error(err.error || 'Server Error') });
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.token) {
                             window.snap.pay(data.token, {
                                 onSuccess: function(result) {
-                                    // Ke halaman sukses, lalu pas klik "Lihat Tiket" balik ke sini
                                     window.location.href = "/orders/success/{{ $orderId }}";
                                 },
-                                onPending: function(result) { window.location.reload(); },
+                                onPending: function(result) { 
+                                    window.location.reload(); 
+                                },
                                 onError: function(result) {
                                     alert("Pembayaran Gagal!");
-                                    payButton.disabled = false;
-                                    payButton.innerHTML = '<i class="fas fa-credit-card mr-2"></i> Bayar Sekarang';
+                                    resetButton();
                                 },
                                 onClose: function() {
-                                    payButton.disabled = false;
-                                    payButton.innerHTML = '<i class="fas fa-credit-card mr-2"></i> Bayar Sekarang';
+                                    resetButton();
                                 }
                             });
+                        } else {
+                            alert("Token tidak ditemukan!");
+                            resetButton();
                         }
+                    })
+                    .catch(error => {
+                        // This handles the "Unexpected token <" or 500 errors
+                        console.error('Error:', error);
+                        alert("Gagal memproses: " + error.message);
+                        resetButton();
                     });
             });
+        }
+
+        // Helper function to bring button back to life
+        function resetButton() {
+            payButton.disabled = false;
+            payButton.innerHTML = '<i class="fas fa-credit-card mr-2"></i> Bayar Sekarang';
         }
     </script>
 </body>

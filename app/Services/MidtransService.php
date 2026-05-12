@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
-use App\Models\Order;
 use Midtrans\Config;
 use Midtrans\Snap;
 use Midtrans\Transaction;
+use App\Models\Order;
 use Exception;
+use Illuminate\Support\Facades\Log; // This fixes line 65
+
 
 class MidtransService
 {
@@ -60,7 +62,7 @@ class MidtransService
 
         try {
             // Jika request ke Midtrans gagal, dia akan melempar Exception
-            return Snap::getSnapToken($params);
+            return \Midtrans\Snap::getSnapToken($params);
         } catch (Exception $e) {
             // Catat error aslinya di storage/logs/laravel.log
             \Log::error('Midtrans API Error: ' . $e->getMessage());
@@ -71,7 +73,7 @@ class MidtransService
     public function checkStatus(string $orderId)
     {
         try {
-            return Transaction::status($orderId);
+            return \Midtrans\Transaction::status($orderId);
         } catch (Exception $e) {
             throw new Exception('Gagal mengecek status: ' . $e->getMessage());
         }
@@ -80,7 +82,7 @@ class MidtransService
     public function cancelTransaction(string $orderId)
     {
         try {
-            return Transaction::cancel($orderId);
+            return \Midtrans\Transaction::cancel($orderId);
         } catch (Exception $e) {
             throw new Exception('Gagal membatalkan transaksi: ' . $e->getMessage());
         }
