@@ -19,7 +19,7 @@ return [
 
     // URL untuk Snap JS (berbeda untuk Sandbox dan Production)
     // Script ini akan diload di frontend (Blade)
-    'snap_url' => env('MIDTRANS_IS_PRODUCTION', false)
-        ? 'https://app.midtrans.com/snap/snap.js'
-        : 'https://app.sandbox.midtrans.com/snap/snap.js',
+    'snap_url' => (env('MIDTRANS_IS_PRODUCTION', false)) 
+                ? 'https://app.midtrans.com/snap/snap.js' 
+                : 'https://app.sandbox.midtrans.com/snap/snap.js',
 ];

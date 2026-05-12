@@ -32,6 +32,7 @@ use App\Http\Controllers\Admin\EventController as AdminEventController;
 use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\Admin\AccesController as AdminAccessController;
 use App\Http\Controllers\Admin\PengelolaanPembayaranController as AdminPengelolaanPembayaranController;
+
 use App\Http\Controllers\Admin\ReportController as ReportController;
 
 // =============================================================
@@ -149,11 +150,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 });
 
 //midtrans
-Route::match(['GET', 'POST'], '/midtrans/callback', function () {
+Route::match(['GET', 'POST'], '/midtrans/notification', function () {
     return response()->json([
         'status' => 'ok'
     ]);
 });
+
 
 
 //bot chat

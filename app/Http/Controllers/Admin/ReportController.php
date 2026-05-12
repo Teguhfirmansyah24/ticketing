@@ -4,106 +4,57 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
-use App\Models\Order;
-use App\Models\Ticket;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
 
 class ReportController extends Controller
 {
-        public function index()
-        {
-            $totalRevenue = Order::where('status', 'paid')->sum('total_amount');
-            $ticketsSold  = Ticket::count();
-            $activeEvents = Event::where('status', 'published')->count();
+    public function index(Request $request)
+    {
+        $dateFrom = $request->query('date_from');
+        $dateTo   = $request->query('date_to');
 
-            $eventPerformance = Event::withCount('tickets')
-                ->with(['category', 'tickets.orderItem.order'])
-                ->get()
-                ->map(function ($event) {
-                    $revenue = $event->tickets
-                    ->filter(fn($t) =>
-                        $t->orderItem &&
-                        $t->orderItem->order &&
-                        $t->orderItem->order->status === 'paid'
-                    )
-                    ->sum(fn($t) =>
-                        $t->orderItem->order->total_amount ?? 0
-                    );
+        // We fetch EVERYTHING first to see what's actually in your DB
+        $eventQuery = Event::with(['category', 'tickets.orderItem.order']);
 
-                        return [
-                        'id'             => $event->id,
-                        'title'          => $event->title,
-                        'category_name'  => $event->category->name ?? 'Uncategorized',
-                        'category_slug'  => $event->category
-                                            ? '/' . \Illuminate\Support\Str::slug($event->category->name)
-                                            : '/uncategorized',
-                        'sold_count'     => $event->tickets_count,
-                        'is_active'      => $event->status === 'published',
-                        'event_date'     => $event->start_date
-                                            ? $event->start_date->format('Y-m-d')
-                                            : now()->format('Y-m-d'),
-                        'revenue'        => $revenue,
-                    ];
-                });
+        // Only filter if the user explicitly searched for dates
+        if ($dateFrom && $dateTo) {
+            $from = \Illuminate\Support\Carbon::parse($dateFrom)->startOfDay();
+            $to   = \Illuminate\Support\Carbon::parse($dateTo)->endOfDay();
 
-            return view('admin.report.index', compact(
-                'totalRevenue',
-                'ticketsSold',
-                'activeEvents',
-                'eventPerformance'
-            ));
+            // Simple check: event must have started before the end of our range
+            $eventQuery->where('start_date', '<=', $to);
         }
 
+        $eventPerformance = $eventQuery->get()->map(function ($event) use ($dateFrom, $dateTo) {
+            // Filter tickets that have a PAID order
+            $paidTickets = $event->tickets->filter(function($t) {
+                return $t->orderItem && 
+                    $t->orderItem->order && 
+                    $t->orderItem->order->status === 'paid';
+            });
 
+            // Revenue calculation
+            $revenue = $paidTickets->sum(fn($t) => $t->orderItem->order->total_amount ?? 0);
+            $soldCount = $paidTickets->count();
 
+            return [
+                'id'            => $event->id,
+                'title'         => $event->title,
+                'category_name' => $event->category->name ?? 'Uncategorized',
+                'sold_count'    => (int) $soldCount,
+                'is_active'     => true, // Force true to show in stats for now
+                'revenue'       => (int) $revenue,
+            ];
+        })->values();
 
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
+        return view('admin.report.index', [
+            'totalRevenue'     => $eventPerformance->sum('revenue'),
+            'ticketsSold'      => $eventPerformance->sum('sold_count'),
+            'activeEvents'     => $eventPerformance->count(), 
+            'eventPerformance' => $eventPerformance,
+            'dateFrom'         => $dateFrom,
+            'dateTo'           => $dateTo
+        ]);
     }
 }
