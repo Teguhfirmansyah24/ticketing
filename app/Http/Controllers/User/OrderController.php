@@ -188,7 +188,9 @@
         }
 
         return view('user.order.success', compact('order'));
+        
     }
+    
 
         /**
          * Step 6: Daftar Tiket Saya
