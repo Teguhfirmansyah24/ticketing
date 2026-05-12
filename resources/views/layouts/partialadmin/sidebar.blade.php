@@ -48,7 +48,7 @@
         </a>
 
         <a href="{{ route('admin.Kategori.index') }}"
-            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.Kategori.index') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
+            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.Kategori.index', 'admin.Kategori.create', 'admin.Kategori.edit') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
             <i class="fas fa-tags text-base group-hover:text-blue-400 w-5 text-center"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Kategori</span>
         </a>
@@ -64,7 +64,7 @@
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Informasi Legal</span>
         </a>
         <a href="{{ route('admin.pembayaran.index') }}"
-            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.pembayaran.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
+            class="flex items-center gap-3.5 px-5 py-3 transition whitespace-nowrap {{ request()->routeIs('admin.pembayaran.index', 'admin.orders.*') ? 'bg-blue-600 text-white' : 'text-slate-300 hover:bg-white/5 group' }}">
             <i class="fas fa-money-bill-wave text-base group-hover:text-blue-400 w-5 text-center"></i>
             <span x-show="sidebarOpen" x-transition.opacity class="text-sm font-bold">Pembayaran</span>
         </a>
