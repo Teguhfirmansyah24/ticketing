@@ -27,7 +27,16 @@ class Order extends Model
         'total_amount' => 'integer',
     ];
 
-    public function user() { return $this->belongsTo(User::class); }
-    public function event() { return $this->belongsTo(Event::class); }
-    public function orderItems() { return $this->hasMany(OrderItem::class); }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }

@@ -206,17 +206,33 @@ class OrderController extends Controller
 
     public function cancel(Order $order)
     {
-        // Validasi: Pastikan hanya pemilik order yang bisa cancel
+        // 1. Validasi: Pastikan hanya pemilik order yang bisa cancel
         if ($order->user_id !== auth()->id()) {
             abort(403);
         }
 
-        // Validasi: Hanya bisa cancel jika belum bayar/approved
+        // 2. Validasi: Hanya bisa cancel jika status masih pending
         if ($order->status === 'pending') {
-            $order->update(['status' => 'cancelled']);
-            return back()->with('success', 'Pesanan berhasil dibatalkan.');
+            try {
+                // Menggunakan Database Transaction untuk keamanan data
+                DB::transaction(function () use ($order) {
+                    foreach ($order->orderItems()->with('ticketType')->get() as $item) {
+                        if ($item->ticketType) {
+                            $item->ticketType->decrement('sold', $item->quantity);
+                        }
+                    }
+
+                    // Update status pesanan menjadi cancelled
+                    $order->update(['status' => 'cancelled']);
+                });
+
+                return back()->with('success', 'Pesanan berhasil dibatalkan dan stok telah dikembalikan.');
+            } catch (\Exception $e) {
+                // Jika terjadi error sistem, kembalikan pesan error
+                return back()->with('error', 'Gagal membatalkan pesanan: ' . $e->getMessage());
+            }
         }
 
-        return back()->with('error', 'Pesanan tidak dapat dibatalkan.');
+        return back()->with('error', 'Pesanan tidak dapat dibatalkan (mungkin sudah terbayar atau kadaluwarsa).');
     }
 }
