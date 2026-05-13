@@ -1,4 +1,97 @@
 <x-admin-layout>
+<style>
+    @media print {
+        /* 1. Global Color Force - Ensures the Cyan background prints */
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
+
+        /* 2. Hide navigation, filters, and non-essential UI */
+        nav, aside, header, .no-print, [role="navigation"], 
+        form, select, input[type="month"], .flex.gap-3, .flex.gap-2 {
+            display: none !important;
+        }       
+
+        /* 3. Reset Main Layout for Paper */
+        main, .content, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            display: block !important;
+            width: 100% !important;
+            background: white !important;
+        }
+
+        /* 4. Container & Header Formatting */
+        .p-6 {
+            margin: 0 !important;
+            padding: 10px !important;
+        }
+
+        h1 {
+            font-size: 24pt !important;
+            margin-bottom: 5px !important;
+        }
+        
+        p.text-sky-600 {
+            margin-bottom: 20px !important;
+            color: #333 !important;
+        }
+
+        /* 5. Grid Layouts: Force Cards (5 columns) and Charts (2 columns) */
+        .grid {
+            display: grid !important;
+            gap: 15px !important;
+        }
+
+        /* Top Stats Cards */
+        .grid-cols-1.md\:grid-cols-2.lg\:grid-cols-5, 
+        .lg\:grid-cols-5 {
+            grid-template-columns: repeat(5, 1fr) !important;
+        }
+
+        /* Charts Section */
+        .grid-cols-1.lg\:grid-cols-2, 
+        .lg\:grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr) !important;
+            margin-top: 20px !important;
+        }
+
+        /* 6. Card & Background Styling */
+        .bg-white {
+            page-break-inside: avoid;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: none !important;
+            border-radius: 12px !important;
+        }
+
+        /* Force the Status Pending Cyan Background */
+        .bg-sky-600 {
+            background-color: #0284c7 !important; /* Cyan color */
+            color: white !important;
+            border-radius: 12px !important;
+            page-break-inside: avoid;
+        }
+
+        /* Ensure white text inside the cyan card stays white */
+        .bg-sky-600 h3, .bg-sky-600 p {
+            color: white !important;
+        }
+
+        /* Reset black text for other cards to ensure readability */
+        .bg-white .text-sky-900, .bg-white h3 {
+            color: #0c4a6e !important;
+        }
+
+        canvas {
+            max-width: 100% !important;
+            height: auto !important;
+        }
+    }
+</style>
+
+
     <div class="p-6 space-y-8">
         <div class="flex justify-between items-end">
             <div>
@@ -6,9 +99,9 @@
                 <p class="text-sky-600 text-sm">Pantau performa pembayaran dan transaksi Anda hari ini.</p>
             </div>
             <div class="flex gap-3">
-                <button
-                    class="bg-white border border-sky-200 text-sky-600 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-sky-50 transition-all flex items-center shadow-sm">
-                    <i class="fa-solid fa-file-export mr-2"></i> Export Report
+                <button onclick="window.print()"
+                    class="bg-white border border-sky-200 text-sky-600 px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-sky-50 transition-all flex items-center shadow-sm no-print">
+                    <i class="fa-solid fa-print mr-2"></i> Print Report
                 </button>
             </div>
         </div>
@@ -129,7 +222,7 @@
             @endforeach
         </div>
 
-        <div class="bg-white rounded-3xl shadow-xl shadow-sky-100/50 border border-sky-100 overflow-hidden">
+        <div class="bg-white rounded-3xl shadow-xl shadow-sky-100/50 border border-sky-100 overflow-hidden no-print">
             <div class="p-6 border-b border-sky-50 flex flex-wrap gap-4 items-center justify-between bg-sky-50/20">
                 <form action="" method="GET" class="relative w-full md:w-96">
                     <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-sky-300">
