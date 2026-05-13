@@ -2,10 +2,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* Maintaining consistency with dashboard styles */
         .glass-card {
             background: white;
-            border: 1px solid #e0f2fe; /* sky-100 */
+            border: 1px solid #e0f2fe;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             border-radius: 1.5rem;
             transition: all 0.3s ease;
@@ -14,6 +13,9 @@
             border-radius: 0.75rem;
             font-weight: 600;
         }
+        /* Cursor pointer for clickable rows */
+        .clickable-row { cursor: pointer; }
+        
         @media print {
             .no-print { display: none !important; }
             .p-8 { padding: 0 !important; }
@@ -44,35 +46,32 @@
             </div>
         </div>
 
-        <!-- Updated Stat Cards to match Dashboard Admin (image_fc3b32.png) -->
+        <!-- Stat Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Revenue Card -->
             <div class="bg-white p-6 rounded-3xl border border-sky-100 shadow-sm">
                 <div class="flex justify-between items-start mb-4">
                     <p class="text-xs font-bold text-sky-500 uppercase tracking-widest">Pendapatan</p>
                     <i class="fas fa-wallet text-sky-200 text-xl"></i>
                 </div>
-                <h3 class="text-2xl font-black text-sky-900" id="statRevenue">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h3>
+                <h3 class="text-2xl font-black text-sky-900">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</h3>
                 <p class="text-[10px] text-emerald-500 mt-2 font-bold italic">Berdasarkan periode terpilih</p>
             </div>
 
-            <!-- Tiket Terjual Card (Blue Highlight match) -->
             <div class="bg-sky-600 p-6 rounded-3xl shadow-lg shadow-sky-200">
                 <div class="flex justify-between items-start mb-4">
                     <p class="text-xs font-bold text-sky-100 uppercase tracking-widest">Tiket Terjual</p>
                     <i class="fas fa-ticket-alt text-sky-300 text-xl"></i>
                 </div>
-                <h3 class="text-2xl font-black text-white" id="statTickets">{{ number_format($ticketsSold, 0, ',', '.') }}</h3>
+                <h3 class="text-2xl font-black text-white">{{ number_format($ticketsSold, 0, ',', '.') }}</h3>
                 <p class="text-[10px] text-sky-200 mt-2 font-bold uppercase italic">Volume Penjualan</p>
             </div>
 
-            <!-- Event Aktif Card -->
             <div class="bg-white p-6 rounded-3xl border border-sky-100 shadow-sm">
                 <div class="flex justify-between items-start mb-4">
                     <p class="text-xs font-bold text-sky-500 uppercase tracking-widest">Event Berjalan</p>
                     <i class="fas fa-calendar-check text-sky-200 text-xl"></i>
                 </div>
-                <h3 class="text-2xl font-black text-sky-900" id="statEvents">{{ $activeEvents }}</h3>
+                <h3 class="text-2xl font-black text-sky-900">{{ $activeEvents }}</h3>
                 <p class="text-[10px] text-sky-400 mt-2 font-bold italic">Total event terpantau</p>
             </div>
         </div>
@@ -95,7 +94,7 @@
         <div class="bg-white rounded-3xl shadow-xl shadow-sky-100/50 border border-sky-100 overflow-hidden">
             <div class="px-6 py-5 bg-sky-50/20 border-b border-sky-50 flex justify-between items-center">
                 <h4 class="font-bold text-sky-900 text-lg">Detail Penjualan Unit</h4>
-                <span class="text-[10px] bg-sky-100 text-sky-600 px-3 py-1 rounded-full font-bold uppercase tracking-widest">Master Data</span>
+                <span class="text-[10px] bg-sky-100 text-sky-600 px-3 py-1 rounded-full font-bold uppercase tracking-widest">Klik baris untuk detail pembeli</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -107,8 +106,8 @@
                         </tr>
                     </thead>
                     <tbody id="eventTableBody" class="divide-y divide-sky-50">
-                        @forelse($eventPerformance as $event)
-                        <tr class="hover:bg-sky-50/30 transition-colors">
+                        @forelse($eventPerformance as $index => $event)
+                        <tr class="hover:bg-sky-50/50 transition-colors clickable-row" onclick="showBuyers({{ $index }})">
                             <td class="px-6 py-5">
                                 <div class="text-sm font-black text-sky-900">{{ $event['title'] }}</div>
                                 <div class="text-[10px] text-sky-500 font-bold uppercase mt-1">{{ $event['category_name'] }}</div>
@@ -131,10 +130,77 @@
         </div>
     </div>
 
+    <!-- Modal for Buyer Details -->
+    <div id="buyerModal" class="fixed inset-0 z-50 hidden overflow-y-auto no-print" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity bg-slate-900/40 backdrop-blur-sm" onclick="closeModal()"></div>
+            <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-3xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="px-6 py-5 border-b border-sky-50 bg-sky-50/30 flex justify-between items-center">
+                    <h3 class="text-lg font-black text-sky-900" id="modalTitle">Detail Pembeli</h3>
+                    <button onclick="closeModal()" class="text-sky-400 hover:text-sky-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div class="px-6 py-4 max-h-[60vh] overflow-y-auto">
+                    <table class="w-full text-left">
+                        <thead class="text-[10px] uppercase text-sky-500 font-bold border-b border-sky-50">
+                            <tr>
+                                <th class="pb-3">Nama Pembeli</th>
+                                <th class="pb-3 text-right">Nominal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="buyerList" class="divide-y divide-slate-50">
+                            <!-- JS will inject rows here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // Data injected from Laravel
         const originalEventData = @json($eventPerformance);
         let sChart = null, cChart = null;
 
+        // --- 1. Modal Logic ---
+        function showBuyers(index) {
+            const event = originalEventData[index];
+            const modal = document.getElementById('buyerModal');
+            const list = document.getElementById('buyerList');
+            const title = document.getElementById('modalTitle');
+
+            title.innerText = event.title;
+            list.innerHTML = ''; // Clear old data
+
+            if (!event.buyers || event.buyers.length === 0) {
+                list.innerHTML = '<tr><td colspan="2" class="py-8 text-center text-slate-400 italic">Belum ada data pembeli detail.</td></tr>';
+            } else {
+                event.buyers.forEach(buyer => {
+                    list.innerHTML += `
+                        <tr class="text-sm">
+                            <td class="py-4">
+                                <div class="font-bold text-slate-700">${buyer.name}</div>
+                                <div class="text-[10px] text-slate-400 font-medium">${buyer.date}</div>
+                            </td>
+                            <td class="py-4 text-right font-black text-sky-600">
+                                Rp ${parseInt(buyer.amount).toLocaleString('id-ID')}
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
+        }
+
+        function closeModal() {
+            document.getElementById('buyerModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // --- 2. Chart Logic ---
         function renderCharts(data) {
             // Line Chart: Revenue per Event
             const salesCtx = document.getElementById('salesChart').getContext('2d');
@@ -167,8 +233,11 @@
 
             // Doughnut Chart: Categories
             const catCounts = {};
-            data.forEach(e => { catCounts[e.category_name] = (catCounts[e.category_name] || 0) + 1; });
-            
+            data.forEach(e => { 
+                const count = parseInt(e.sold_count) || 0;
+                catCounts[e.category_name] = (catCounts[e.category_name] || 0) + count; 
+            });
+
             const catCtx = document.getElementById('categoryChart').getContext('2d');
             if (cChart) cChart.destroy();
             cChart = new Chart(catCtx, {
@@ -176,15 +245,36 @@
                 data: {
                     labels: Object.keys(catCounts).length ? Object.keys(catCounts) : ['Empty'],
                     datasets: [{
+                        label: 'Total Terjual',
                         data: Object.values(catCounts).length ? Object.values(catCounts) : [1],
-                        backgroundColor: ['#0ea5e9', '#6366f1', '#38bdf8', '#f43f5e', '#8b5cf6', '#e2e8f0']
+                        backgroundColor: ['#0ea5e9', '#6366f1', '#38bdf8', '#f43f5e', '#8b5cf6', '#e2e8f0'],
+                        borderWidth: 2,
+                        hoverOffset: 4
                     }]
                 },
                 options: { 
                     responsive: true, 
                     maintainAspectRatio: false, 
-                    cutout: '75%',
-                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
+                    cutout: '70%',
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                padding: 20,
+                                usePointStyle: true,
+                                font: { size: 11, weight: '600' } 
+                            } 
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.label || '';
+                                    let value = context.raw || 0;
+                                    return ` ${label}: ${value.toLocaleString()} Tiket`;
+                                }
+                            }
+                        }
+                    }
                 }
             });
         }
