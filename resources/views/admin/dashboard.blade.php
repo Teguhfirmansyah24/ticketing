@@ -15,14 +15,14 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
             {{-- Card 1: Total Transaksi --}}
-            <div class="bg-white p-6 rounded-3xl border border-sky-100 shadow-sm">
+            <a href="{{ route('admin.pembayaran.index') }}" class="bg-white p-6 rounded-3xl border border-sky-100 shadow-sm transition-all hover:border-sky-300">
                 <div class="flex justify-between items-start mb-4">
                     <p class="text-xs font-bold text-sky-500 uppercase tracking-widest">Total Transaksi</p>
                     <i class="fas fa-credit-card text-sky-200 text-xl"></i>
                 </div>
                 <h3 class="text-2xl font-black text-sky-900">{{ $orders->count() }}</h3>
                 <p class="text-[10px] text-emerald-500 mt-2 font-bold italic">Update otomatis</p>
-            </div>
+            </a>
 
             <div
                 class="group relative bg-white p-6 rounded-3xl border border-sky-100 shadow-sm transition-all hover:border-sky-300 cursor-help">
@@ -65,36 +65,34 @@
             </div>
 
             {{-- Card 3: Status Pending (Highlight) --}}
-            <div class="bg-sky-600 p-6 rounded-3xl shadow-lg shadow-sky-200">
+            <a href="{{ route('admin.pembayaran.index', ['status' => 'pending']) }}" class="block bg-sky-600 p-6 rounded-3xl shadow-lg shadow-sky-200 transition-all hover:bg-sky-700">
                 <div class="flex justify-between items-start mb-4">
                     <p class="text-xs font-bold text-sky-100 uppercase tracking-widest">Status Pending</p>
                     <i class="fas fa-clock text-sky-300 text-xl"></i>
                 </div>
                 <h3 class="text-2xl font-black text-white">{{ $orders->where('status', 'pending')->count() }}</h3>
                 <p class="text-[10px] text-sky-200 mt-2 font-bold">Perlu tindakan admin</p>
-            </div>
+            </a>
 
             {{-- Card 4: Status Berhasil --}}
-            <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm">
+            <a href="{{ route('admin.pembayaran.index', ['status' => 'approved']) }}" class="block bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm transition-all hover:border-emerald-300">
                 <div class="flex justify-between items-start mb-4">
                     <p class="text-xs font-bold text-emerald-500 uppercase tracking-widest">Status Berhasil</p>
                     <i class="fas fa-check-circle text-emerald-200 text-xl"></i>
                 </div>
-                <h3 class="text-2xl font-black text-emerald-900">{{ $orders->where('status', 'approved')->count() }}
-                </h3>
+                <h3 class="text-2xl font-black text-emerald-900">{{ $orders->where('status', 'approved')->count() }}</h3>
                 <p class="text-[10px] text-emerald-400 mt-2 font-bold">Transaksi sukses</p>
-            </div>
+            </a>
 
             {{-- Card 5: Status Dibatalkan --}}
-            <div class="bg-white p-6 rounded-3xl border border-rose-100 shadow-sm">
+            <a href="{{ route('admin.pembayaran.index', ['status' => 'cancel']) }}" class="block bg-white p-6 rounded-3xl border border-rose-100 shadow-sm transition-all hover:border-rose-300">
                 <div class="flex justify-between items-start mb-4">
                     <p class="text-xs font-bold text-rose-500 uppercase tracking-widest">Status Dibatalkan</p>
                     <i class="fas fa-times-circle text-rose-200 text-xl"></i>
                 </div>
-                <h3 class="text-2xl font-black text-rose-900">{{ $orders->where('status', 'cancelled')->count() }}
-                </h3>
+                <h3 class="text-2xl font-black text-rose-900">{{ $orders->where('status', 'cancel')->count() }}</h3>
                 <p class="text-[10px] text-rose-400 mt-2 font-bold">Transaksi dibatalkan</p>
-            </div>
+            </a>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
