@@ -5,22 +5,20 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // 1. Start the query with relationships
+        // 1. Start the query with relationships (untuk TABEL)
         $query = Order::with(['user', 'orderItems.ticketType', 'event']);
 
-        // 2. RE-INSERTED: Handle Status Filter (Dropdown)
+        // 2. Handle Status Filter (Dropdown)
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        // 3. RE-INSERTED: Handle Search Filter (Input)
+        // 3. Handle Search Filter (Input)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -40,6 +38,32 @@ class DashboardController extends Controller
 
         // 4. Finalize the orders collection for the table
         $orders = $query->latest()->paginate(10)->withQueryString();
+
+        // 5. Ambil SEMUA order untuk statistik (TANPA filter status dari request)
+        $allOrdersQuery = Order::query();
+        
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $allOrdersQuery->where(function($q) use ($search) {
+                $q->where('order_code', 'like', "%{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($u) use ($search) {
+                      $u->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+        
+        $allOrders = $allOrdersQuery->get();
+
+        // 6. Hitung statistik
+        $totalTransaksi = $allOrders->count();
+        $totalApproved = $allOrders->where('status', 'approved')->sum('total_amount');
+        $totalPending = $allOrders->where('status', 'pending')->sum('total_amount');
+        
+        $jumlahPending = $allOrders->where('status', 'pending')->count();
+        $jumlahApproved = $allOrders->where('status', 'approved')->count();
+        $jumlahCancelled = $allOrders->where('status', 'cancelled')->count();
+        $jumlahExpired = $allOrders->where('status', 'expired')->count();
 
         // --- DATE & VIEW LOGIC FOR CHARTS ---
         $viewType = $request->get('view', 'month');
@@ -76,6 +100,17 @@ class DashboardController extends Controller
 
         return view('admin.dashboard', [
             'orders' => $orders,
+            
+            // Statistik untuk card
+            'totalTransaksi' => $totalTransaksi,
+            'totalApproved' => $totalApproved,
+            'totalPending' => $totalPending,
+            'jumlahPending' => $jumlahPending,
+            'jumlahApproved' => $jumlahApproved,
+            'jumlahCancelled' => $jumlahCancelled,
+            'jumlahExpired' => $jumlahExpired,
+            
+            // Data untuk chart
             'labels' => $chartMasuk->map(fn($item) => $viewType === 'week' ? "Wk $item->label_num" : "$item->label_text $item->year_num"),
             'dataMasuk' => $chartMasuk->pluck('total'),
             'dataSelesai' => $chartSelesai->pluck('total'),
