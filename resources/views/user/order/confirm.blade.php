@@ -135,7 +135,7 @@
                 </div>
             </div>
 
-           @if ($order->status !== 'approved' && $order->status !== 'cancelled')
+           @if ($order->status === 'pending')
     {{-- Tombol Bayar --}}
     <div class="p-8 pb-0">
         <button id="pay-button"
@@ -144,16 +144,14 @@
         </button>
     </div>
 
-    {{-- Tombol Cancel & Kembali Sejajar --}}
+    {{-- Tombol Cancel & Kembali --}}
     <div class="p-8 pt-4">
         <div class="flex flex-col sm:flex-row gap-3 justify-between items-center">
-            {{-- Tombol Kembali (KIRI) --}}
             <a href="{{ route('member.tiket.index') }}"
                 class="w-full sm:w-1/2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl text-center font-semibold text-sm uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-2">
                 <i class="fas fa-arrow-left"></i> Kembali
             </a>
 
-            {{-- Tombol Batalkan Pesanan (KANAN) --}}
             <form action="{{ route('order.cancel', $order->id) }}" method="POST"
                 onsubmit="return confirm('Yakin ingin membatalkan pesanan?')" class="w-full sm:w-1/2">
                 @csrf
@@ -165,6 +163,23 @@
             </form>
         </div>
     </div>
+
+@elseif($order->status === 'expired')
+    {{-- TAMPILAN JIKA EXPIRED --}}
+    <div class="p-8">
+        <div class="bg-amber-50 border border-amber-200 text-amber-700 p-4 rounded-xl text-center flex flex-col items-center gap-2">
+            <i class="fas fa-clock text-2xl"></i>
+            <div>
+                <p class="font-bold text-sm uppercase tracking-wide">Waktu Pembayaran Habis</p>
+                <p class="text-xs opacity-90">Maaf, pesanan ini telah kedaluwarsa karena melewati batas waktu 24 jam.</p>
+            </div>
+        </div>
+        <a href="{{ route('home') }}"
+            class="block bg-slate-800 hover:bg-slate-900 text-white py-4 rounded-xl text-center font-bold text-sm uppercase tracking-widest transition-all mt-4">
+            Cari Tiket Lain
+        </a>
+    </div>
+
 @elseif($order->status === 'cancelled')
     <div class="p-8">
         <div class="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl text-center text-sm font-medium">
@@ -175,7 +190,8 @@
             <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
         </a>
     </div>
-@else
+
+@elseif($order->status === 'approved')
     <div class="p-8">
         <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-xl flex items-center gap-3">
             <i class="fas fa-check-circle text-xl"></i>
