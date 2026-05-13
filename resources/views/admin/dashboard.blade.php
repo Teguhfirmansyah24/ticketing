@@ -82,6 +82,8 @@
                         <option value="{{ request()->fullUrlWithQuery(['status' => '']) }}">Semua Status</option>
                         <option value="{{ request()->fullUrlWithQuery(['status' => 'pending']) }}" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                         <option value="{{ request()->fullUrlWithQuery(['status' => 'approved']) }}" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="{{ request()->fullUrlWithQuery(['status' => 'expired']) }}" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
+                        <option value="{{ request()->fullUrlWithQuery(['status' => 'cancelled']) }}" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
                 </div>
             </div>
