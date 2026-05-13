@@ -14,91 +14,82 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-            {{-- Card 1: Total Transaksi --}}
-            <a href="{{ route('admin.pembayaran.index') }}"
-                class="bg-white p-6 rounded-3xl border border-sky-100 shadow-sm transition-all hover:border-sky-300">
-                <div class="flex justify-between items-start mb-4">
-                    <p class="text-xs font-bold text-sky-500 uppercase tracking-widest">Total Transaksi</p>
-                    <i class="fas fa-credit-card text-sky-200 text-xl"></i>
-                </div>
-                <h3 class="text-2xl font-black text-sky-900">{{ $orders->count() }}</h3>
-                <p class="text-[10px] text-emerald-500 mt-2 font-bold italic">Update otomatis</p>
-            </a>
+    {{-- Card 1: Total Transaksi --}}
+    <div class="bg-white p-6 rounded-3xl border border-sky-100 shadow-sm">
+        <div class="flex justify-between items-start mb-4">
+            <p class="text-xs font-bold text-sky-500 uppercase tracking-widest">Total Transaksi</p>
+            <i class="fas fa-credit-card text-sky-200 text-xl"></i>
+        </div>
+        <h3 class="text-2xl font-black text-sky-900">{{ $totalTransaksi }}</h3>
+        <p class="text-[10px] text-emerald-500 mt-2 font-bold italic">Update otomatis</p>
+    </div>
 
-            <div
-                class="group relative bg-white p-6 rounded-3xl border border-sky-100 shadow-sm transition-all hover:border-sky-300 cursor-help">
-                <!-- Hover Tooltip Content -->
-                <div
-                    class="absolute invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300 bottom-full left-1/2 -translate-x-1/2 mb-4 w-56 bg-sky-900 text-white p-4 rounded-2xl shadow-xl z-50">
-                    <div class="space-y-2">
-                        <div
-                            class="flex justify-between items-center text-[10px] uppercase tracking-wider font-bold text-sky-300">
-                            <span>Breakdown Status</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-medium text-emerald-400">Approved:</span>
-                            <span class="text-sm font-black">Rp
-                                {{ number_format($orders->where('status', 'approved')->sum('total_amount'), 0, ',', '.') }}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-medium text-amber-400">Pending:</span>
-                            <span class="text-sm font-black">Rp
-                                {{ number_format($orders->where('status', 'pending')->sum('total_amount'), 0, ',', '.') }}</span>
-                        </div>
-                    </div>
-                    <!-- Tooltip Arrow -->
-                    <div
-                        class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-sky-900">
-                    </div>
+    {{-- Card 2: Pendapatan Total dengan Tooltip Hover --}}
+    <div class="group relative bg-white p-6 rounded-3xl border border-sky-100 shadow-sm transition-all hover:border-sky-300 cursor-help">
+        <!-- Tooltip Content -->
+        <div class="absolute invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300 bottom-full left-1/2 -translate-x-1/2 mb-4 w-56 bg-sky-900 text-white p-4 rounded-2xl shadow-xl z-50">
+            <div class="space-y-2">
+                <div class="flex justify-between items-center text-[10px] uppercase tracking-wider font-bold text-sky-300">
+                    <span>Breakdown Status</span>
                 </div>
-
-                <!-- Main Card Content -->
-                <div class="flex justify-between items-start mb-4">
-                    <p class="text-xs font-bold text-sky-500 uppercase tracking-widest">Pendapatan Total</p>
-                    <i class="fas fa-wallet text-sky-200 text-xl"></i>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-medium text-emerald-400">Approved:</span>
+                    <span class="text-sm font-black">Rp {{ number_format($totalApproved, 0, ',', '.') }}</span>
                 </div>
-                <h3 class="text-2xl font-black text-sky-900">Rp
-                    {{ number_format($orders->sum('total_amount'), 0, ',', '.') }}</h3>
-                <div class="flex items-center mt-2">
-                    <p class="text-[10px] text-emerald-500 font-bold">Berdasarkan halaman ini</p>
-                    <i class="fas fa-circle-info ml-1 text-[10px] text-sky-300"></i>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-medium text-amber-400">Pending:</span>
+                    <span class="text-sm font-black">Rp {{ number_format($totalPending, 0, ',', '.') }}</span>
                 </div>
             </div>
-
-            {{-- Card 3: Status Pending (Highlight) --}}
-            <a href="{{ route('admin.pembayaran.index', ['status' => 'pending']) }}"
-                class="block bg-sky-600 p-6 rounded-3xl shadow-lg shadow-sky-200 transition-all hover:bg-sky-700">
-                <div class="flex justify-between items-start mb-4">
-                    <p class="text-xs font-bold text-sky-100 uppercase tracking-widest">Status Pending</p>
-                    <i class="fas fa-clock text-sky-300 text-xl"></i>
-                </div>
-                <h3 class="text-2xl font-black text-white">{{ $orders->where('status', 'pending')->count() }}</h3>
-                <p class="text-[10px] text-sky-200 mt-2 font-bold">Perlu tindakan admin</p>
-            </a>
-
-            {{-- Card 4: Status Berhasil --}}
-            <a href="{{ route('admin.pembayaran.index', ['status' => 'approved']) }}"
-                class="block bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm transition-all hover:border-emerald-300">
-                <div class="flex justify-between items-start mb-4">
-                    <p class="text-xs font-bold text-emerald-500 uppercase tracking-widest">Status Berhasil</p>
-                    <i class="fas fa-check-circle text-emerald-200 text-xl"></i>
-                </div>
-                <h3 class="text-2xl font-black text-emerald-900">{{ $orders->where('status', 'approved')->count() }}
-                </h3>
-                <p class="text-[10px] text-emerald-400 mt-2 font-bold">Transaksi sukses</p>
-            </a>
-
-            {{-- Card 5: Status Dibatalkan --}}
-            <a href="{{ route('admin.pembayaran.index', ['status' => 'cancel']) }}"
-                class="block bg-white p-6 rounded-3xl border border-rose-100 shadow-sm transition-all hover:border-rose-300">
-                <div class="flex justify-between items-start mb-4">
-                    <p class="text-xs font-bold text-rose-500 uppercase tracking-widest">Status Dibatalkan</p>
-                    <i class="fas fa-times-circle text-rose-200 text-xl"></i>
-                </div>
-                <h3 class="text-2xl font-black text-rose-900">{{ $orders->where('status', 'cancelled')->count() }}</h3>
-                <p class="text-[10px] text-rose-400 mt-2 font-bold">Transaksi dibatalkan</p>
-            </a>
+            <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-sky-900"></div>
         </div>
+
+        <!-- Main Card Content -->
+        <div class="flex justify-between items-start mb-4">
+            <p class="text-xs font-bold text-sky-500 uppercase tracking-widest">Pendapatan Total</p>
+            <i class="fas fa-wallet text-sky-200 text-xl"></i>
+        </div>
+        <h3 class="text-2xl font-black text-sky-900">Rp {{ number_format($totalApproved, 0, ',', '.') }}</h3>
+        <div class="flex items-center mt-2">
+            <p class="text-[10px] text-emerald-500 font-bold">Dari transaksi berhasil</p>
+            <i class="fas fa-circle-info ml-1 text-[10px] text-sky-300"></i>
+        </div>
+    </div>
+
+    {{-- Card 3: Status Pending (Highlight) --}}
+    <div class="bg-sky-600 p-6 rounded-3xl shadow-lg shadow-sky-200">
+        <div class="flex justify-between items-start mb-4">
+            <p class="text-xs font-bold text-sky-100 uppercase tracking-widest">Status Pending</p>
+            <i class="fas fa-clock text-sky-300 text-xl"></i>
+        </div>
+        <h3 class="text-2xl font-black text-white">{{ $jumlahPending }}</h3>
+        <p class="text-[10px] text-sky-200 mt-2 font-bold">Perlu tindakan admin</p>
+    </div>
+
+    {{-- Card 4: Status Berhasil --}}
+    <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm">
+        <div class="flex justify-between items-start mb-4">
+            <p class="text-xs font-bold text-emerald-500 uppercase tracking-widest">Status Berhasil</p>
+            <i class="fas fa-check-circle text-emerald-200 text-xl"></i>
+        </div>
+        <h3 class="text-2xl font-black text-emerald-900">{{ $jumlahApproved }}</h3>
+        <p class="text-[10px] text-emerald-400 mt-2 font-bold">Transaksi sukses</p>
+    </div>
+
+    {{-- Card 5: Status Dibatalkan + Expired --}}
+    <div class="bg-white p-6 rounded-3xl border border-rose-100 shadow-sm">
+        <div class="flex justify-between items-start mb-4">
+            <p class="text-xs font-bold text-rose-500 uppercase tracking-widest">Status Batal/Expired</p>
+            <i class="fas fa-times-circle text-rose-200 text-xl"></i>
+        </div>
+        <h3 class="text-2xl font-black text-rose-900">{{ $jumlahCancelled + $jumlahExpired }}</h3>
+        <div class="flex gap-2 mt-2">
+            <p class="text-[10px] text-rose-400 font-bold">Batal: {{ $jumlahCancelled }}</p>
+            <p class="text-[10px] text-rose-400 font-bold">Expired: {{ $jumlahExpired }}</p>
+        </div>
+        <p class="text-[10px] text-rose-400 mt-1 font-bold">Transaksi gagal</p>
+    </div>
+</div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             @foreach (['Laporan Bulanan' => 'chartSatu', 'Tren Penyelesaian' => 'chartDua'] as $title => $id)
