@@ -109,6 +109,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/orders/confirm/{id}',  [UserOrderController::class, 'confirm'])->name('orders.confirm');
     Route::get('/payment/token/{order}', [UserOrderController::class, 'getSnapToken'])->name('orders.token');
     Route::get('/orders/success/{id}',   [UserOrderController::class, 'paymentSuccess'])->name('orders.success');
+    Route::patch('/order/{order}/cancel', [UserOrderController::class, 'cancel'])->name('order.cancel');
 });
 
 // =============================================================
@@ -140,7 +141,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/event/{id}', [AdminEventController::class, 'update'])->name('events.update');
     Route::resource('access', App\Http\Controllers\Admin\AccesController::class);
 
-     Route::get('/pembayaran', [AdminPengelolaanPembayaranController::class, 'index'])->name('pembayaran.index');
+    Route::get('/pembayaran', [AdminPengelolaanPembayaranController::class, 'index'])->name('pembayaran.index');
     Route::post('/pembayaran/{id}/approve', [AdminPengelolaanPembayaranController::class, 'approve'])->name('orders.approve');
     Route::get('/pembayaran/{id}', [AdminPengelolaanPembayaranController::class, 'show'])->name('orders.show');
     Route::get('/pembayaran/{id}/edit', [AdminPengelolaanPembayaranController::class, 'edit'])->name('orders.edit');

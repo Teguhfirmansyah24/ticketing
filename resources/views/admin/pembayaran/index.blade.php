@@ -33,10 +33,11 @@
                         <option value="{{ request()->fullUrlWithQuery(['status' => '']) }}">Semua Status</option>
                         <option value="{{ request()->fullUrlWithQuery(['status' => 'pending']) }}" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                         <option value="{{ request()->fullUrlWithQuery(['status' => 'approved']) }}" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="{{ request()->fullUrlWithQuery(['status' => 'expired']) }}" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
+                        <option value="{{ request()->fullUrlWithQuery(['status' => 'cancelled']) }}" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
                 </div>
             </div>
-
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -83,50 +84,71 @@
                             </td>
 
                             <td class="px-6 py-5">
-                                @if($order->status == 'approved' || $order->status == 'success')
-                                    <span class="px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-600 text-[10px] font-black uppercase tracking-wider flex items-center w-fit">
-                                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2 animate-pulse"></span> Approved
-                                    </span>
-                                @elseif($order->status == 'pending')
-                                    <span class="px-3 py-1.5 rounded-xl bg-amber-100 text-amber-600 text-[10px] font-black uppercase tracking-wider flex items-center w-fit">
-                                        <span class="w-1.5 h-1.5 bg-amber-500 rounded-full mr-2 animate-pulse"></span> Pending
-                                    </span>
-                                @else
-                                    <span class="px-3 py-1.5 rounded-xl bg-red-100 text-red-600 text-[10px] font-black uppercase tracking-wider flex items-center w-fit">
-                                        {{ $order->status }}
-                                    </span>
-                                @endif
-                            </td>
+                        @if($order->status == 'approved' || $order->status == 'success')
+                            <span class="px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-600 text-[10px] font-black uppercase tracking-wider flex items-center w-fit">
+                                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full mr-2 animate-pulse"></span> Approved
+                            </span>
+                        @elseif($order->status == 'pending')
+                            <span class="px-3 py-1.5 rounded-xl bg-amber-100 text-amber-600 text-[10px] font-black uppercase tracking-wider flex items-center w-fit">
+                                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full mr-2 animate-pulse"></span> Pending
+                            </span>
+                        @elseif($order->status == 'expired')
+                            <span class="px-3 py-1.5 rounded-xl bg-red-100 text-red-600 text-[10px] font-black uppercase tracking-wider flex items-center w-fit">
+                                <span class="w-1.5 h-1.5 bg-red-500 rounded-full mr-2"></span> Expired
+                            </span>
+                        @elseif($order->status == 'cancelled')
+                            <span class="px-3 py-1.5 rounded-xl bg-gray-100 text-gray-600 text-[10px] font-black uppercase tracking-wider flex items-center w-fit">
+                                <span class="w-1.5 h-1.5 bg-gray-500 rounded-full mr-2"></span> Cancelled
+                            </span>
+                        @else
+                            <span class="px-3 py-1.5 rounded-xl bg-red-100 text-red-600 text-[10px] font-black uppercase tracking-wider">
+                                {{ ucfirst($order->status) }}
+                            </span>
+                        @endif
+                    </td>
 
-                           <td class="px-6 py-5 text-center">
-                            <div class="flex items-center justify-center gap-2">
-                                <a href="{{ route('admin.orders.show', $order->id) }}" class="p-2 bg-sky-50 text-sky-600 rounded-lg hover:bg-sky-600 hover:text-white transition-all shadow-sm" title="Lihat Detail">
-                                    <i class="fa-solid fa-eye text-[10px]"></i>
-                                </a>
+                    <td class="px-6 py-5 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <!-- Detail -->
+                            <a href="{{ route('admin.orders.show', $order->id) }}" 
+                            class="p-2 bg-sky-50 text-sky-600 rounded-lg hover:bg-sky-600 hover:text-white transition-all shadow-sm" 
+                            title="Lihat Detail">
+                                <i class="fa-solid fa-eye text-[10px]"></i>
+                            </a>
 
-                                <a href="{{ route('admin.orders.edit', $order->id) }}" class="p-2 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-600 hover:text-white transition-all shadow-sm" title="Edit Transaksi">
-                                    <i class="fa-solid fa-pen-to-square text-[10px]"></i>
-                                </a>
-                                
-                                @if($order->status == 'pending')
-                                    <form action="{{ route('admin.orders.approve', $order->id) }}" method="POST" onsubmit="return confirm('Approve pesanan ini?')">
-                                        @csrf
-                                        <button type="submit" class="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition-all shadow-sm" title="Setujui">
-                                            <i class="fa-solid fa-check text-[10px]"></i>
-                                        </button>
-                                    </form>
-                                @endif
-
-                                <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" onsubmit="return confirm('Hapus data transaksi ini secara permanen?')">
+                            @if($order->status == 'pending')
+                                <!-- Approve Only -->
+                                <form action="{{ route('admin.orders.approve', $order->id) }}" method="POST" 
+                                    onsubmit="return confirm('Approve pesanan ini?')">
                                     @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm" title="Hapus Data">
-                                        <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                    <button type="submit" 
+                                            class="p-2 bg-emerald-50 text-emerald-600 rounded-lg hover:bg-emerald-600 hover:text-white transition-all shadow-sm" 
+                                            title="Approve">
+                                        <i class="fa-solid fa-check text-[10px]"></i>
                                     </button>
                                 </form>
-                            </div>
-                        </td>
-                        </tr>
+                            @endif
+
+                            <!-- Edit -->
+                            <a href="{{ route('admin.orders.edit', $order->id) }}" 
+                            class="p-2 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-600 hover:text-white transition-all shadow-sm" 
+                            title="Edit Transaksi">
+                                <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                            </a>
+
+                            <!-- Delete -->
+                            <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" 
+                                onsubmit="return confirm('Hapus data transaksi ini secara permanen?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" 
+                                        class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm" 
+                                        title="Hapus Data">
+                                    <i class="fa-solid fa-trash-can text-[10px]"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>                        </tr>
                         @empty
                         <tr>
                             <td colspan="6" class="px-6 py-10 text-center text-sky-400 italic font-bold">
