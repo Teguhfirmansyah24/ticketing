@@ -88,7 +88,7 @@ class OrderController extends Controller
                     'phone'        => $request->phone,
                     'id_number'    => $request->id_number,
                     'status'       => 'pending',
-                    'expired_at'   => now()->addMinutes(15),
+                    'expired_at'   => now()->addHours(24),
                 ]);
 
                 foreach ($items as $item) {
