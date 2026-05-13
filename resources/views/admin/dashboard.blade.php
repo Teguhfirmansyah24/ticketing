@@ -23,15 +23,37 @@
         <p class="text-[10px] text-emerald-500 mt-2 font-bold italic">Update otomatis</p>
     </div>
 
-    {{-- Card 2: Pendapatan --}}
-    <div class="bg-white p-6 rounded-3xl border border-sky-100 shadow-sm">
-        <div class="flex justify-between items-start mb-4">
-            <p class="text-xs font-bold text-sky-500 uppercase tracking-widest">Pendapatan</p>
-            <i class="fas fa-wallet text-sky-200 text-xl"></i>
-        </div>
-        <h3 class="text-2xl font-black text-sky-900">Rp {{ number_format($orders->sum('total_amount'), 0, ',', '.') }}</h3>
-        <p class="text-[10px] text-emerald-500 mt-2 font-bold">Berdasarkan halaman ini</p>
-    </div>
+            <div class="group relative bg-white p-6 rounded-3xl border border-sky-100 shadow-sm transition-all hover:border-sky-300 cursor-help">
+                <!-- Hover Tooltip Content -->
+                <div class="absolute invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-300 bottom-full left-1/2 -translate-x-1/2 mb-4 w-56 bg-sky-900 text-white p-4 rounded-2xl shadow-xl z-50">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-[10px] uppercase tracking-wider font-bold text-sky-300">
+                            <span>Breakdown Status</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-medium text-emerald-400">Approved:</span>
+                            <span class="text-sm font-black">Rp {{ number_format($orders->where('status', 'approved')->sum('total_amount'), 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-medium text-amber-400">Pending:</span>
+                            <span class="text-sm font-black">Rp {{ number_format($orders->where('status', 'pending')->sum('total_amount'), 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+                    <!-- Tooltip Arrow -->
+                    <div class="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-sky-900"></div>
+                </div>
+
+                <!-- Main Card Content -->
+                <div class="flex justify-between items-start mb-4">
+                    <p class="text-xs font-bold text-sky-500 uppercase tracking-widest">Pendapatan Total</p>
+                    <i class="fas fa-wallet text-sky-200 text-xl"></i>
+                </div>
+                <h3 class="text-2xl font-black text-sky-900">Rp {{ number_format($orders->sum('total_amount'), 0, ',', '.') }}</h3>
+                <div class="flex items-center mt-2">
+                    <p class="text-[10px] text-emerald-500 font-bold">Berdasarkan halaman ini</p>
+                    <i class="fas fa-circle-info ml-1 text-[10px] text-sky-300"></i>
+                </div>
+            </div>
 
     {{-- Card 3: Status Pending (Highlight) --}}
     <div class="bg-sky-600 p-6 rounded-3xl shadow-lg shadow-sky-200">
@@ -65,20 +87,34 @@
 </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            @foreach(['Laporan Bulanan' => 'chartSatu', 'Tren Penyelesaian' => 'chartDua'] as $title => $id)
             <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-gray-800">Laporan Bulanan</h3>
-                    <span class="text-xs text-gray-400">Jan - Jun 2026</span>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-800">{{ $title }}</h3>
+                        <span class="text-[10px] font-medium text-gray-400 italic">{{ $startDateLabel }} - {{ $endDateLabel }}</span>
+                    </div>
+                    
+                    <form action="" method="GET" class="flex items-center gap-2">
+                        {{-- Keep existing filters --}}
+                        @if(request('search')) <input type="hidden" name="search" value="{{ request('search') }}"> @endif
+                        @if(request('status')) <input type="hidden" name="status" value="{{ request('status') }}"> @endif
+                        
+                        {{-- Week/Month Toggle --}}
+                        <select name="view" onchange="this.form.submit()" class="text-[10px] font-bold border-none bg-sky-50 text-sky-600 rounded-lg px-2 py-1 focus:ring-0">
+                            <option value="month" {{ request('view') == 'month' ? 'selected' : '' }}>MONTHLY</option>
+                            <option value="week" {{ request('view') == 'week' ? 'selected' : '' }}>WEEKLY</option>
+                        </select>
+
+                        <input type="month" name="until" 
+                            value="{{ request('until', now()->format('Y-m')) }}"
+                            onchange="this.form.submit()"
+                            class="text-[10px] font-bold text-sky-600 border-none bg-sky-50 rounded-lg py-1 px-2 cursor-pointer focus:ring-0">
+                    </form>
                 </div>
-                <div class="h-72"><canvas id="chartSatu"></canvas></div>
+                <div class="h-72"><canvas id="{{ $id }}"></canvas></div>
             </div>
-            <div class="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-bold text-gray-800">Tren Penyelesaian</h3>
-                    <span class="text-xs text-gray-400">Jan - Jun 2026</span>
-                </div>
-                <div class="h-72"><canvas id="chartDua"></canvas></div>
-            </div>
+            @endforeach
         </div>
 
         <div class="bg-white rounded-3xl shadow-xl shadow-sky-100/50 border border-sky-100 overflow-hidden">
@@ -96,6 +132,8 @@
                         <option value="{{ request()->fullUrlWithQuery(['status' => '']) }}">Semua Status</option>
                         <option value="{{ request()->fullUrlWithQuery(['status' => 'pending']) }}" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
                         <option value="{{ request()->fullUrlWithQuery(['status' => 'approved']) }}" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                        <option value="{{ request()->fullUrlWithQuery(['status' => 'expired']) }}" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired</option>
+                        <option value="{{ request()->fullUrlWithQuery(['status' => 'cancelled']) }}" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
                     </select>
                 </div>
             </div>
@@ -112,37 +150,43 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-sky-50">
-                        @forelse($orders->when(request('status'), function($query) {
-                            return $query->where('status', request('status'));
-                        }) as $order)
-                        <tr class="hover:bg-sky-50/30 transition-colors">
-                            <td class="px-6 py-5">
-                                <div class="text-sm font-black text-sky-900">#{{ $order->order_code }}</div>
-                                <div class="text-[10px] text-sky-500 font-bold uppercase mt-1">{{ $order->created_at?->format('d M Y') }}</div>
-                            </td>
-                            <td class="px-6 py-5">
-                                <div class="text-sm font-bold text-gray-800">{{ $order->user?->name ?? $order->name ?? 'User Terhapus' }}</div>
-                                <div class="text-[11px] text-gray-400">{{ $order->user?->email ?? $order->email }}</div>
-                            </td>
-                            <td class="px-6 py-5">
-                                @php $item = $order->orderItems->first(); @endphp
-                                <div class="text-sm font-semibold text-gray-700">{{ $item?->ticketType?->name ?? 'N/A' }}</div>
-                                <div class="text-[10px] px-2 py-0.5 bg-sky-50 text-sky-600 rounded-md inline-block mt-1 font-medium italic">
-                                    {{ $order->event?->title ?? 'Event N/A' }}
-                                </div>
-                            </td>
-                            <td class="px-6 py-5 font-black text-sky-900 text-sm">
-                                Rp {{ number_format($order->total_amount, 0, ',', '.') }}
-                            </td>
-                            <td class="px-6 py-5">
-                                <span class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center w-fit {{ $order->status == 'approved' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600' }}">
-                                    <span class="w-1.5 h-1.5 rounded-full mr-2 animate-pulse {{ $order->status == 'approved' ? 'bg-emerald-500' : 'bg-amber-500' }}"></span> 
-                                    {{ $order->status }}
-                                </span>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr><td colspan="6" class="px-6 py-10 text-center text-sky-400 italic font-bold">Belum ada transaksi masuk.</td></tr>
+                        @forelse($orders as $order)
+                            <tr class="hover:bg-sky-50/30 transition-colors">
+                                <td class="px-6 py-5">
+                                    <div class="text-sm font-black text-sky-900">#{{ $order->order_code }}</div>
+                                    <div class="text-[10px] text-sky-500 font-bold uppercase mt-1">{{ $order->created_at?->format('d M Y') }}</div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    <div class="text-sm font-bold text-gray-800">{{ $order->user?->name ?? $order->name ?? 'User Terhapus' }}</div>
+                                    <div class="text-[11px] text-gray-400">{{ $order->user?->email ?? $order->email }}</div>
+                                </td>
+                                <td class="px-6 py-5">
+                                    @php $item = $order->orderItems->first(); @endphp
+                                    <div class="text-sm font-semibold text-gray-700">{{ $item?->ticketType?->name ?? 'N/A' }}</div>
+                                    <div class="text-[10px] px-2 py-0.5 bg-sky-50 text-sky-600 rounded-md inline-block mt-1 font-medium italic">
+                                        {{ $order->event?->title ?? 'Event N/A' }}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-5 font-black text-sky-900 text-sm">
+                                    Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                                </td>
+                                <td class="px-6 py-5">
+                                    <span class="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider flex items-center w-fit {{ $order->status == 'approved' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600' }}">
+                                        <span class="w-1.5 h-1.5 rounded-full mr-2 animate-pulse {{ $order->status == 'approved' ? 'bg-emerald-500' : 'bg-amber-500' }}"></span> 
+                                        {{ $order->status }}
+                                    </span>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="6" class="px-6 py-10 text-center text-sky-400 italic font-bold">
+                                    @if(request('search'))
+                                        Data tidak ditemukan untuk pencarian "{{ request('search') }}"
+                                    @else
+                                        Belum ada transaksi masuk.
+                                    @endif
+                                </td>
+                            </tr>
                         @endforelse
                     </tbody>
                 </table>
