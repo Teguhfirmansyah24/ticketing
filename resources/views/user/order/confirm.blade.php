@@ -135,56 +135,61 @@
                 </div>
             </div>
 
-            @if ($order->status !== 'approved' && $order->status !== 'cancelled')
-                <div class="flex flex-col gap-3">
-                    {{-- Tombol Bayar --}}
-                    <button id="pay-button"
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all shadow-lg shadow-blue-100 flex items-center justify-center">
-                        <i class="fas fa-credit-card mr-2"></i> Bayar Sekarang
-                    </button>
+           @if ($order->status !== 'approved' && $order->status !== 'cancelled')
+    {{-- Tombol Bayar --}}
+    <div class="p-8 pb-0">
+        <button id="pay-button"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-bold text-sm uppercase tracking-widest transition-all shadow-lg shadow-blue-100 flex items-center justify-center">
+            <i class="fas fa-credit-card mr-2"></i> Bayar Sekarang
+        </button>
+    </div>
 
-                    {{-- Tombol Cancel --}}
-                    <form action="{{ route('order.cancel', $order->id) }}" method="POST"
-                        onsubmit="return confirm('Yakin ingin membatalkan pesanan?')">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit"
-                            class="w-full bg-white border border-red-200 text-red-500 hover:bg-red-50 py-3 rounded-xl font-semibold text-xs uppercase tracking-widest transition-all">
-                            Batalkan Pesanan
-                        </button>
-                    </form>
+    {{-- Tombol Cancel & Kembali Sejajar --}}
+    <div class="p-8 pt-4">
+        <div class="flex flex-col sm:flex-row gap-3 justify-between items-center">
+            {{-- Tombol Kembali (KIRI) --}}
+            <a href="{{ route('member.tiket.index') }}"
+                class="w-full sm:w-1/2 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl text-center font-semibold text-sm uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-2">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
 
-                    <a href="{{ route('member.tiket.index') }}"
-                        class="block bg-emerald-500 hover:bg-emerald-600 text-white p-4 rounded-xl text-center font-medium text-[16px] transition-colors">
-                        Kembali
-                    </a>
-                </div>
-            @elseif($order->status === 'cancelled')
-                {{-- Tampilan jika sudah dicancel --}}
-                <div class="bg-gray-100 text-red-500 p-4 rounded-xl text-center text-sm font-medium">
-                    Pesanan ini telah dibatalkan.
-                </div>
-                <a href="{{ route('home') }}"
-                    class="block bg-emerald-500 hover:bg-emerald-600 text-white p-4 rounded-xl text-center font-medium text-[16px] transition-colors">
-                    Kembali
-                </a>
-            @else
-                {{-- Muncul jika sudah APPROVED --}}
-                <div class="flex flex-col gap-3">
-                    <div
-                        class="bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-xl flex items-center gap-3">
-                        <i class="fas fa-check-circle text-xl"></i>
-                        <div>
-                            <p class="font-bold text-sm">Pembayaran Berhasil!</p>
-                            <p class="text-xs opacity-80">Tiket Anda sudah aktif dan dapat digunakan.</p>
-                        </div>
-                    </div>
-                    <a href="{{ route('member.tiket.index') }}"
-                        class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-xl text-center font-bold text-sm uppercase tracking-widest transition-all shadow-lg shadow-emerald-100">
-                        Lihat Tiket Saya
-                    </a>
-                </div>
-            @endif
+            {{-- Tombol Batalkan Pesanan (KANAN) --}}
+            <form action="{{ route('order.cancel', $order->id) }}" method="POST"
+                onsubmit="return confirm('Yakin ingin membatalkan pesanan?')" class="w-full sm:w-1/2">
+                @csrf
+                @method('PATCH')
+                <button type="submit"
+                    class="w-full bg-white border-2 border-red-300 text-red-500 hover:bg-red-50 hover:border-red-400 px-6 py-3 rounded-xl font-semibold text-sm uppercase tracking-widest transition-all shadow-sm flex items-center justify-center gap-2">
+                    <i class="fas fa-times-circle"></i> Batalkan Pesanan
+                </button>
+            </form>
+        </div>
+    </div>
+@elseif($order->status === 'cancelled')
+    <div class="p-8">
+        <div class="bg-red-50 border border-red-200 text-red-600 p-4 rounded-xl text-center text-sm font-medium">
+            <i class="fas fa-info-circle mr-2"></i> Pesanan ini telah dibatalkan.
+        </div>
+        <a href="{{ route('home') }}"
+            class="block bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-xl text-center font-medium text-[16px] transition-colors mt-4">
+            <i class="fas fa-arrow-left mr-2"></i> Kembali ke Beranda
+        </a>
+    </div>
+@else
+    <div class="p-8">
+        <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-xl flex items-center gap-3">
+            <i class="fas fa-check-circle text-xl"></i>
+            <div>
+                <p class="font-bold text-sm">Pembayaran Berhasil!</p>
+                <p class="text-xs opacity-80">Tiket Anda sudah aktif dan dapat digunakan.</p>
+            </div>
+        </div>
+        <a href="{{ route('member.tiket.index') }}"
+            class="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-4 rounded-xl text-center font-bold text-sm uppercase tracking-widest transition-all shadow-lg shadow-emerald-100 flex items-center justify-center gap-2 mt-4">
+            <i class="fas fa-ticket-alt"></i> Lihat Tiket Saya
+        </a>
+    </div>
+@endif
         </div>
 
         @if ($order->status !== 'approved')
