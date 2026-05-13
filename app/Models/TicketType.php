@@ -33,10 +33,12 @@ class TicketType extends Model
 
     public function availableQuota()
     {
+        // Sisa stok yang benar-benar bisa dibeli
         return $this->quota - $this->sold;
     }
+
     public function hasAvailableStock($quantity)
     {
-        return $this->quota >= $quantity;
+        return $this->availableQuota() >= $quantity;
     }
 }
