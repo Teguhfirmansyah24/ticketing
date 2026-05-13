@@ -98,7 +98,9 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-sky-50">
-                        @forelse($orders as $order)
+                        @forelse($orders->when(request('status'), function($query) {
+                            return $query->where('status', request('status'));
+                        }) as $order)
                         <tr class="hover:bg-sky-50/30 transition-colors">
                             <td class="px-6 py-5">
                                 <div class="text-sm font-black text-sky-900">#{{ $order->order_code }}</div>
